@@ -39,8 +39,14 @@ public class Pokemon {
   
   
   //this is the attacking pokemon, and p is the pokemon being attacked
-  public void attack(Pokemon p) { 
-      p.hp-=this.atk; 
+  //this produces a String that is used in attack() in PokemonBattle so 
+  //that the user is able to track the progress of the battle
+  public String attack(Pokemon p) {
+    String s=this.getNickName() + " attacked " + p; 
+    int pre_hp=p.hp; 
+    p.hp-=this.atk; 
+    s+=p + "'s HP dropped from " + pre_hp + " to " + p.hp + "."; 
+    return s; 
   }
   
   
