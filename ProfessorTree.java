@@ -227,6 +227,7 @@ public class ProfessorTree<T> implements Iterable<T> {
   
   public static void main (String[] args) { 
     ProfessorTree<String> fam = new ProfessorTree<String>("KBot"); 
+    //ordered by CS classes taught- and then arbitrarily ordered because there overlap in the dept..
     fam.setLeft("KBot", "Ellen"); 
     fam.setRight("KBot", "Randy"); 
     fam.setLeft("Ellen", "Scott"); 
