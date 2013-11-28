@@ -1,0 +1,20 @@
+public class Move { 
+  private String name; 
+  private String type; 
+  private int pow; 
+  private int acc;
+  private String effect; 
+  
+  public Move (String name, String type, int pow, int acc, String effect) {
+    this.name=name; 
+    this.type=type; 
+    this.pow=pow; 
+    this.acc=acc; 
+    this.effect=effect; 
+  }
+  
+  public String toString() { 
+    return "" + name; 
+  }
+  
+}

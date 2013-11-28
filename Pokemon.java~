@@ -1,0 +1,17 @@
+public abstract class Pokemon { 
+  private String name;
+  private String nickName;
+  private int hp; 
+  private int attack; 
+  private int defense; 
+  private int speed; 
+  
+  public Pokemon (String nickName) { 
+    name="Pokemon";
+    this.nickName=nickName; 
+    hp=1; 
+    attack=1; 
+    defense=1; 
+    speed=1; 
+  }
+}
