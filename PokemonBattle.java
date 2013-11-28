@@ -1,7 +1,6 @@
 import java.util.*;
 
-public class PokemonBattle
- implements Comparable<T> {
+public class PokemonBattle {
  final int loss=0; //the value of your health when you lose
  private Pokemon p1; //the self
  private Pokemon p2; //the professor
@@ -32,8 +31,8 @@ public class PokemonBattle
   }
   
   public String toString() { 
-   String s=p1 + " is fighting against " + p2 + "."; 
-   s+=playPokemonBattle().getNickName() + " wins!"
+   String s=p1.getNickName() + " is fighting against " + p2.getNickName() + ".\n"; 
+   s+=playPokemonBattle(p1, p2).getNickName() + " wins!";
 //   String s=p2.getTrainer() + " wants to fight!" +
 //    p2.getTrainer() + " sent out " + p2.getNickName() + "!" + 
 //    "Go! " + p1.getNickName() + "!"; 
