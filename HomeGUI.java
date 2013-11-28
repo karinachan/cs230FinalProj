@@ -17,11 +17,20 @@ public class HomeGUI
       JFrame frame = new JFrame ("HomeGUI");
       frame.setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);    
       frame.setSize(new Dimension(500,400)); 
-      InstructionPanel panel = new InstructionPanel();
-      frame.getContentPane().add(panel);
-      
+
 
       
+       InstructionPanel panel = new InstructionPanel();
+      frame.getContentPane().add(panel);
+      //adds each individual panel on to the pane
+     // tp.addTab ("Instructions", new InstructionPanel());
+     // tp.addTab("Start", new InstructionPanel());
+      
+
+
+
+      
+
 //      frame.pack();
       frame.setVisible(true);
       frame.setResizable(false); //sets it so that user cannot resize the windows because users are not trustworthy
