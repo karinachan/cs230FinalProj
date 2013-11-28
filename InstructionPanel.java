@@ -15,7 +15,12 @@ import javax.swing.border.*;
 
 public class InstructionPanel extends JPanel
 {
-  private JPanel cards, home, buttons, game, instructs, bio;
+
+
+
+  
+  private JPanel cards, home, buttons, game, instructs, bio, panel;
+
   private JButton start, howto, about;
   private JLabel titleLabel;
   //private JSlider academicsSlider, researchSlider, publicationsSlider;
@@ -23,6 +28,15 @@ public class InstructionPanel extends JPanel
   
   public InstructionPanel()
   {
+
+
+    panel = new JPanel(); 
+    JLabel hi= new JLabel("hi");
+    panel.add(hi);
+    panel.setVisible(false);
+    panel.add(hi); 
+    add(panel);
+    
     cards = new JPanel(new CardLayout()); 
     home = new JPanel(new BorderLayout()); 
     home.setBorder(new EmptyBorder(20,20,20,20));
@@ -45,24 +59,40 @@ public class InstructionPanel extends JPanel
     add(home); 
   }
   
-  private JPanel makeHowTo() { 
+
+
+
+  /*private JPanel makeHowTo() { 
     JPanel panel = new JPanel(); 
     JLabel hi = new JLabel("hi"); 
     panel.add(hi); 
     return panel; 
   }
-  
+  */
 
+
+  
+  
   
   private class ButtonListener implements ActionListener {
     public void actionPerformed(ActionEvent event){
       //FOR THE ADD SCHOOL BUTTON
+
       if (event.getSource() == start) {
         System.out.println("Start"); 
         //launch the game
       } else if (event.getSource() == howto) { 
         System.out.println("How To"); 
-        home=makeHowTo();
+
+
+        panel.setVisible(true);
+        home.setVisible(false);
+        //this.getContentPane().add(makeHowTo());
+      
+        
+
+        //home=makeHowTo();
+
         //go to howto page
       } else if (event.getSource() == about) { 
         System.out.println("About"); 
