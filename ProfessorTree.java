@@ -1,12 +1,20 @@
 import java.util.*;
+import javafoundations.*;
+import javafoundations.LinkedQueue; //for BFS
+import javafoundations.ArrayStack; //for DFS
+import java.util.*;
+import java.io.*;
 
 public class ProfessorTree<T> implements Iterable<T> {
   private T[] tree; 
   private int count; 
   private final int NOT_FOUND=-1;
+  private Object top;
+
   
   public ProfessorTree (T root) { 
-    tree = (T[])new Object[]{root}; 
+    top= root;
+    tree = (T[])new Object[]{top}; 
     count=1; 
   }
   
@@ -225,6 +233,18 @@ public class ProfessorTree<T> implements Iterable<T> {
     return iter;
   }
   
+  public ProfessorTree<T> shuffle(){
+    ProfessorTree<T> shuffled= new ProfessorTree(top);
+    T[] shuffleArray= (T[]) new Object[tree.length];
+    shuffleArray[0]=tree[0];
+    for (int i=0; i<this.count; i++){
+      shuffleArray.setLeft(tree[i], this.getNextProf(tree[i+2]));
+    }
+    count=shuffled.count;
+    return shuffled;
+  }
+     
+  
   public static void main (String[] args) { 
     ProfessorTree<String> fam = new ProfessorTree<String>("KBot"); 
     //ordered by CS classes taught- and then arbitrarily ordered because there overlap in the dept..
@@ -242,8 +262,9 @@ public class ProfessorTree<T> implements Iterable<T> {
     fam.setRight("Takis", "Brian"); 
     fam.setLeft("Orit", "Jean"); 
     fam.setRight("Orit", "Sohie"); 
+    //System.out.println("fam.getRight("Orit"));
     System.out.println(fam); 
-    
-
+    System.out.println(fam.shuffle());
+  
   }
 }

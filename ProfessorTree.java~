@@ -5,7 +5,7 @@ public class ProfessorTree<T> implements Iterable<T> {
   private int count; 
   private final int NOT_FOUND=-1;
   
-  public GenealogyTree (T root) { 
+  public ProfessorTree (T root) { 
     tree = (T[])new Object[]{root}; 
     count=1; 
   }
@@ -23,7 +23,7 @@ public class ProfessorTree<T> implements Iterable<T> {
   }
   
   //  Returns the element stored in the root (aka CoTU) of the tree.
-  public T getCoTU() { 
+  public T getBoss() { 
     return tree[0]; 
   }
   
@@ -40,7 +40,7 @@ public class ProfessorTree<T> implements Iterable<T> {
   
   //  Returns the member that is the offspring of target.
   //  Returns null as the offspring of the root.
-  public T getOffspring(T target) { 
+  public T getNextProf(T target) { 
     try { 
       //returns the T object stored in the ((index+1)/2)-1 slot 
       //no need to check for nulls b/c the offspring is the 
@@ -50,7 +50,7 @@ public class ProfessorTree<T> implements Iterable<T> {
       //doesn't work for index 0
       return tree[((indexOf(target)+1)/2)-1];
     } catch (ArrayIndexOutOfBoundsException aioobe) { 
-      /*if (getCoTU().equals(target)) { 
+      /*if (getBoss().equals(target)) { 
         System.out.println("The target " + target + " does not have offspring."); 
       } else { 
         //if the target isn't the CoTU, and the program is running into aioobe, 
@@ -63,7 +63,7 @@ public class ProfessorTree<T> implements Iterable<T> {
   
   //  Returns the member that is the left child of target.
   //  Returns null if the left child does not exist.
-  public T getPater(T target) { 
+  public T getLeft(T target) { 
     //(indexOf(target)*2)+1 is the left-side child (Tree term)
     //if the index of the left-side child (Tree term is empty, 
     //it should still return null
@@ -74,9 +74,9 @@ public class ProfessorTree<T> implements Iterable<T> {
     }
   }
   
-  //  Sets the left child of the tree target to lchild.
+  //  Sets the left child of the tree target to lprof.
   //  It throws an exception if target is not already in the tree
-  public void setPater(T target, T lchild) { 
+  public void setLeft(T target, T lprof) { 
     try { 
       //checks to see if target exists
       if (indexOf(target)==NOT_FOUND) { 
@@ -84,18 +84,18 @@ public class ProfessorTree<T> implements Iterable<T> {
       } else { 
         int cIndex = (indexOf(target)*2)+1;
         //if T[] tree isn't big enough (ie: the length of the tree is 
-        //less than or equal to the index necessary to house the lchild), 
+        //less than or equal to the index necessary to house the lprof), 
         //then expand
         if (cIndex>=tree.length) {
           expand(); 
         }
         //if the target doesn't have a pater, then this is the first pater, so we
         //increment count; however, if the target does have a pater, then we still 
-        //want to set tree[cIndex] to lchild, but we don't want to increment
-        if (getPater(target)==null) {
+        //want to set tree[cIndex] to lprof, but we don't want to increment
+        if (getLeft(target)==null) {
           count++; 
         }
-        tree[cIndex]=lchild; 
+        tree[cIndex]=lprof; 
       }
     } catch (ArrayIndexOutOfBoundsException aioobe) { 
       //System.out.println("The target " + target + " does not exist.");
@@ -105,7 +105,7 @@ public class ProfessorTree<T> implements Iterable<T> {
   
   //  Returns the element that is the right child of target.
   //  Returns null if the right child does not exist
-  public T getMater(T target) { 
+  public T getRight(T target) { 
     //(indexOf(target)*2)+2 is the right-side child (Tree term)
     //if the index of the right-side child (Tree term is empty, 
     //it should still return null
@@ -116,9 +116,9 @@ public class ProfessorTree<T> implements Iterable<T> {
     }
   }
   
-  //  Sets the right child of target to rchild.
+  //  Sets the right child of target to rprof.
   //  It throws an exception if target is not already in the tree
-  public void setMater(T target, T rchild) {
+  public void setRight(T target, T rprof) {
     try { 
       //checks to see if target exists
       if (indexOf(target)==NOT_FOUND) { 
@@ -126,18 +126,18 @@ public class ProfessorTree<T> implements Iterable<T> {
       } else {
         int cIndex = (indexOf(target)*2)+2;
         //if T[] tree isn't big enough (ie: the length of the tree is 
-        //less than or equal to the index necessary to house the rchild), 
+        //less than or equal to the index necessary to house the rprof), 
         //then expand
         if (cIndex>=tree.length) {
           expand(); 
         }
         //if the target doesn't have a mater, then this is the first mater, so we
         //increment count; however, if the target does have a mater, then we still 
-        //want to set tree[cIndex] to rchild, but we don't want to increment count
-        if (getMater(target)==null) {
+        //want to set tree[cIndex] to rprof, but we don't want to increment count
+        if (getRight(target)==null) {
           count++; 
         }
-        tree[cIndex]=rchild; 
+        tree[cIndex]=rprof; 
       }
     } catch (ArrayIndexOutOfBoundsException aioobe) { 
       //System.out.println("The target " + target + " does not exist.");
@@ -158,7 +158,7 @@ public class ProfessorTree<T> implements Iterable<T> {
   // Two grandparents that share a grandchild are "inLaws"
   public boolean inLaws(T gp1, T gp2) { 
     try { 
-      return (getOffspring(getOffspring(gp1)).equals(getOffspring(getOffspring(gp2)))); 
+      return (getNextProf(getNextProf(gp1)).equals(getNextProf(getNextProf(gp2)))); 
       //if we try to access an offspring that doesn't exist 
       //(ie: go beyond the root), then return false
     } catch (NullPointerException npe) { 
@@ -174,7 +174,7 @@ public class ProfessorTree<T> implements Iterable<T> {
   //  Returns the string representation of the binary tree,
   //  one line per level.
   public String toString() { 
-    String s = "My genealogy contains " + count + " members:\n"; 
+    String s = "The CS department has " + count + " members:\n"; 
     Iterator<T> iter = iterator();
     int index=0; 
     int num=1; 
@@ -226,49 +226,23 @@ public class ProfessorTree<T> implements Iterable<T> {
   }
   
   public static void main (String[] args) { 
-    //testing normal tree
-    GenealogyTree<String> fam = new GenealogyTree<String>("L"); 
-    System.out.println("getCoTU() - Should print L: " + fam.getCoTU()); 
-    System.out.println("getOffspring - Should print null: " + fam.getOffspring("L")); 
-    fam.setPater("L","A"); 
-    fam.setMater("L","B"); 
-    System.out.println("getOffspring - Should print L: " + fam.getOffspring("A")); 
-    System.out.println("getOffspring - Should print L: " + fam.getOffspring("B")); 
-    System.out.println("getOffspring - Should print null: " + fam.getOffspring("C")); 
-    System.out.println("getPater - Should print A: " + fam.getPater("L")); 
-    System.out.println("getPater - Should print null: " + fam.getPater("A")); 
-    System.out.println("getPater - Should print null: " + fam.getPater("C")); 
-    System.out.println("getMater - Should print B: " + fam.getMater("L")); 
-    System.out.println("getMater - Should print null: " + fam.getMater("A")); 
-    System.out.println("getMater - Should print null: " + fam.getMater("C")); 
-    fam.setPater("C","D"); 
-    fam.setMater("C","D"); 
+    ProfessorTree<String> fam = new ProfessorTree<String>("KBot"); 
+    //ordered by CS classes taught- and then arbitrarily ordered because there overlap in the dept..
+    fam.setLeft("KBot", "Ellen"); 
+    fam.setRight("KBot", "Randy"); 
+    fam.setLeft("Ellen", "Scott"); 
+    fam.setRight("Ellen", "Lyn"); 
+    fam.setLeft("Scott", "Rhys"); 
+    fam.setRight("Scott", "Darakhshan"); 
+    fam.setLeft("Lyn", "Eni"); 
+    fam.setRight("Lyn", "Rita"); 
+    fam.setLeft("Randy", "Takis"); 
+    fam.setRight("Randy", "Orit"); 
+    fam.setLeft("Takis", "Stella"); 
+    fam.setRight("Takis", "Brian"); 
+    fam.setLeft("Orit", "Jean"); 
+    fam.setRight("Orit", "Sohie"); 
     System.out.println(fam); 
-    System.out.println("Reseting L's Pater to D and L's Mater to E"); 
-    fam.setPater("L","D"); 
-    fam.setMater("L","E"); 
-    System.out.println(fam); 
-    System.out.println("size - Should print 3: " + fam.size()); 
-    System.out.println("appears - Should print true: " + fam.appears("D")); 
-    System.out.println("appears - Should print false: " + fam.appears("B")); 
-    fam.setPater("D","F"); 
-    fam.setMater("E","G"); 
-    System.out.println(fam); 
-    System.out.println("size - Should print 5: " + fam.size()); 
-    System.out.println("inLaws - Should print true: " + fam.inLaws("F","G")); 
-    System.out.println("inLaws - Should print false: " + fam.inLaws("D","E")); 
-    System.out.println("inLaws - Should print false: " + fam.inLaws("L","A")); 
-    System.out.println("inLaws - Should print false: " + fam.inLaws("L","Z")); 
-    fam.setPater("F","H"); 
-    fam.setMater("F","I"); 
-    fam.setPater("G","J"); 
-    fam.setMater("G","K"); 
-    System.out.println(fam); 
-    System.out.println("size - Should print 9: " + fam.size()); 
-    //empty strings also work
-    //GenealogyTree<String> empty = new GenealogyTree<String>(""); 
-    //empty.setPater(""," "); 
-    //System.out.println(empty); 
     
 
   }

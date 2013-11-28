@@ -4,7 +4,7 @@
 //  Represents a node in a binary tree with a left and right child.
 //  Therefore this class also represents the root of a subtree.
 //*******************************************************************
-
+  
 package javafoundations;
 
 public class BTNode<T>

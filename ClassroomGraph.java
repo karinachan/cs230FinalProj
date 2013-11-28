@@ -391,7 +391,7 @@ public class ClassroomGraph<T> implements Graph<T>
     * If it cannot save the file, a message is printed. 
     *****************************************************************/
   
-  /*
+
   public void saveTGF(String tgf_file_name) {
     try {
       PrintWriter writer = new PrintWriter(new File(tgf_file_name));
@@ -424,7 +424,7 @@ public class ClassroomGraph<T> implements Graph<T>
     }
   }
   
-  */
+
   
 
  
