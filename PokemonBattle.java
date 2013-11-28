@@ -16,9 +16,9 @@ public class PokemonBattle
   }
 
   public Pokemon playPokemonBattle
- (String name, int numRounds) {
+ (Pokemon p1, Pokemon p2) {
     while (p1.getHP()!=loss && p2.getHP()!=loss){ 
-      if (p1.getSPD()>=p2.getSPD()){
+      if (p1.getSPD()>=p2.getSPD( )){
         p1.attack(p2);
       } else {
         p2.attack(p1);
@@ -32,14 +32,20 @@ public class PokemonBattle
   }
   
   public String toString() { 
-   String s="hi"; 
+   String s=p1 + " is fighting against " + p2 + "."; 
+   s+=playPokemonBattle().getNickName() + " wins!"
+//   String s=p2.getTrainer() + " wants to fight!" +
+//    p2.getTrainer() + " sent out " + p2.getNickName() + "!" + 
+//    "Go! " + p1.getNickName() + "!"; 
+   
    return s; 
   }
   
   public static void main (String[] args) { 
-   String s=p2.getTrainer() + " wants to fight!" +
-    p2.getTrainer() + " sent out " + p2.getNickName() + "!" + 
-    "Go! " + p1.getNickName() + "!"; 
+   Pokemon lyn = new Pokemon ("Buneary", "Angelica", "Lyn", 100, 20, 50); 
+   Pokemon rhys = new Pokemon ("Mr. Mime", "Mime", "Rhys", 100, 30, 40); 
+   PokemonBattle fight = new PokemonBattle(lyn, rhys);
+   System.out.println(fight); 
   }
   
   //if lose, then set the pokemon obj (if you lost) back a node on the tree of opponents
@@ -47,11 +53,3 @@ public class PokemonBattle
   //increment the win for the pokemon 
   //increment number of people you've visited 
   
-  
-  /** Start the homework by reading this method. 
-    */
-  public static void main (String args[]) {   
-    // Create an instance of a new game and play the rounds
-    
-  }
-}
