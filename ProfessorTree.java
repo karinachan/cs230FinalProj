@@ -1,6 +1,6 @@
 import java.util.*;
 import javafoundations.*;
-import javafoundations.LinkedQueue; //for BFS
+//import javafoundations.LinkedQueue; //for BFS
 import javafoundations.ArrayStack; //for DFS
 import java.util.*;
 import java.io.*;
@@ -229,18 +229,25 @@ public class ProfessorTree<T> implements Iterable<T> {
         if (current.getRight() != null)
           queue.enqueue(current.getRight());
       }
-    }
-    return iter;
+      }
+      return iter;
   }
   
+  
   public ProfessorTree<T> shuffle(){
-    ProfessorTree<T> shuffled= new ProfessorTree(top);
-    T[] shuffleArray= (T[]) new Object[tree.length];
-    shuffleArray[0]=tree[0];
-    for (int i=0; i<this.count; i++){
-      shuffleArray.setLeft(tree[i], this.getNextProf(tree[i+2]));
+    ProfessorTree shuffled= new ProfessorTree(top);
+    //T[] profs = (T[])new Object[count]; 
+    T[] profs = tree; 
+    Random r = new Random(); 
+    for (int i=0; i<count; i++) { 
+      int rand = r.nextInt(i+1);
+      T hold = profs[rand]; 
+      profs[rand]=profs[i]; 
+      profs[i]=hold; 
     }
-    count=shuffled.count;
+    for (int i=0; i<count; i++) { 
+      System.out.println(profs[i]); 
+    }
     return shuffled;
   }
      
@@ -263,8 +270,10 @@ public class ProfessorTree<T> implements Iterable<T> {
     fam.setLeft("Orit", "Jean"); 
     fam.setRight("Orit", "Sohie"); 
     //System.out.println("fam.getRight("Orit"));
+    //System.out.println(fam); 
+    //System.out.println(fam.shuffle());
     System.out.println(fam); 
-    System.out.println(fam.shuffle());
+    fam.shuffle(); 
   
   }
 }
