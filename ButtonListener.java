@@ -1,56 +1,78 @@
-private class ButtonListener implements ActionListener {
+import java.awt.*;
+import java.awt.event.*; 
+import javax.swing.*;
+import javax.swing.event.*;
+import javax.swing.border.*; 
+
+public class ButtonListener implements ActionListener {
   
-  public ButtonListener(){
-    
+  /*AboutPanel about;
+   InstructionPanel instr;
+   GamePanel game;
+   LayoutPanel layout;
+   */
+  
+  
+  
+  //JPanel about, instr, game, layout;
+  JButton set;
+  public ButtonListener(JButton boop){
+    set=boop;
   } 
+  
+  
   
   
   public void actionPerformed(ActionEvent event){
     //FOR THE ADD SCHOOL BUTTON
-    
-    if (event.getSource() == start) {
-      System.out.println("Start"); 
-      gamePanel.setVisible(true);
-      home.setVisible(false);
-      //launch the game
-    } else if (event.getSource() == howto) { 
-      System.out.println("How To"); 
-      
-      
-      instrpanel.setVisible(true);
-      home.setVisible(false);
-      //this.getContentPane().add(makeHowTo());
-      
-      
-      
-      //home=makeHowTo();
-      
-      //go to howto page
-    } else if (event.getSource() == about) { 
-      System.out.println("About"); 
-      aboutPanel.setVisible(true);
-      home.setVisible(false);
-      //go to about page
+    if (event.getSource()==set){
+      System.out.println("yes!");
     }
-    else if (event.getSource() == aboutback) {
-      System.out.println("Return");
-      home.setVisible(true);
-      aboutPanel.setVisible(false);
-      
-      
-    } else if (event.getSource() == gameback) {
-      System.out.println("Return");
-      home.setVisible(true);
-      gamePanel.setVisible(false);
-      
-      
-    } else if (event.getSource() == instrback) {
-      System.out.println("Return");
-      home.setVisible(true);
-      instrpanel.setVisible(false);
-      
-      
-    }
+    /*
+     if (event.getSource() == start) {
+     System.out.println("Start"); 
+     game.setVisible(true);
+     layout.setVisible(false);
+     //launch the game
+     } else if (event.getSource() == howto) { 
+     System.out.println("How To"); 
+     
+     
+     instr.setVisible(true);
+     layout.setVisible(false);
+     //this.getContentPane().add(makeHowTo());
+     
+     
+     
+     //home=makeHowTo();
+     
+     //go to howto page
+     } else if (event.getSource() == about) { 
+     System.out.println("About"); 
+     about.setVisible(true);
+     layout.setVisible(false);
+     //go to about page
+     }
+     else if (event.getSource() == aboutback) {
+     System.out.println("Return");
+     layout.setVisible(true);
+     about.setVisible(false);
+     
+     
+     } else if (event.getSource() == gameback) {
+     System.out.println("Return");
+     layout.setVisible(true);
+     game.setVisible(false);
+     
+     
+     } else if (event.getSource() == instrback) {
+     System.out.println("Return");
+     layout.setVisible(true);
+     instr.setVisible(false);
+     
+     
+     }
+     */
     
   }
 }

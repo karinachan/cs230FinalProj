@@ -5,7 +5,7 @@ import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.border.*; 
 
-public class InstructionPanel{
+public class InstructionPanel extends JPanel{
   JPanel instrpanel;
   JButton instrback;
   public InstructionPanel(){
@@ -14,7 +14,7 @@ public class InstructionPanel{
     instrpanel.setVisible(false); //hidden until pressed
     instrpanel.add(hi); 
     instrback = new JButton ("Back"); 
-    instrback.addActionListener(new ButtonListener()); 
+    instrback.addActionListener(new ButtonListener(instrback)); 
     instrpanel.add(instrback);
     add(instrpanel);
     

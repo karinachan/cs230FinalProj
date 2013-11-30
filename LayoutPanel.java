@@ -12,9 +12,6 @@ import javax.swing.border.*;
 public class LayoutPanel extends JPanel
 {
   
-  
-  
-  
   private JPanel cards, home, buttons, game, instructs, bio;//, instrpanel, aboutPanel, gamePanel;
   
   private JButton start, howto, about;//, instrback, aboutback, gameback;
@@ -22,13 +19,19 @@ public class LayoutPanel extends JPanel
   //private JSlider academicsSlider, researchSlider, publicationsSlider;
   //private JLabel academicsLabel, researchLabel, publicationsLabel, highestLabel, titleLabel;
   
+  private InstructionPanel ip;
+  private AboutPanel ap;
+  private GamePanel gp;
+  
   public LayoutPanel()
   {
-    
+   ip= new InstructionPanel();
+   ap= new AboutPanel();
+   gp= new GamePanel();
     //create a function that makes the GUI pages (so we don't have to type this out 5 million times?) 
     
     //instruction panel
-    
+     
     //what if we put this in another file for better organization
     /*JLabel hi= new JLabel("TOMATOES");
      instrpanel = new JPanel(new FlowLayout()); 
@@ -80,9 +83,9 @@ public class LayoutPanel extends JPanel
     start = new JButton ("Start"); 
     howto = new JButton ("How To"); 
     about = new JButton ("About Us"); 
-    start.addActionListener(new ButtonListener()); 
-    howto.addActionListener(new ButtonListener());
-    about.addActionListener(new ButtonListener());
+    start.addActionListener(new ButtonListener(start)); 
+    howto.addActionListener(new ButtonListener(howto));
+    about.addActionListener(new ButtonListener(about));
     home.add(titleLabel, BorderLayout.PAGE_START); 
     buttons.add(start);
     buttons.add(howto); 

@@ -19,7 +19,7 @@ public class HomeGUI
     frame.setSize(new Dimension(500,400)); 
     
     
-    LayoutPanel panel = new LayoutPanel(schools);
+    LayoutPanel panel = new LayoutPanel();
     frame.getContentPane().add(panel);
     //adds each individual panel on to the pane
     // tp.addTab ("Instructions", new InstructionPanel());
