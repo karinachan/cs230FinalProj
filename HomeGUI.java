@@ -22,8 +22,6 @@ public class HomeGUI
     LayoutPanel panel = new LayoutPanel();
     frame.getContentPane().add(panel);
     //adds each individual panel on to the pane
-    // tp.addTab ("Instructions", new InstructionPanel());
-    // tp.addTab("Start", new InstructionPanel());
     
     
     
