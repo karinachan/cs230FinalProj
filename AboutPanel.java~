@@ -1,0 +1,23 @@
+
+import java.awt.*;
+import java.awt.event.*; 
+import javax.swing.*;
+import javax.swing.event.*;
+import javax.swing.border.*; 
+
+public class AboutPanel{
+  
+  public AboutPanel(){
+  JLabel hi= new JLabel("TOMATOES");
+    aboutPanel = new JPanel(new FlowLayout()); 
+    aboutPanel.setVisible(false); //hidden until pressed
+    aboutPanel.add(hi); 
+    aboutBack= new JButton ("Back"); 
+    aboutBack.addActionListener(new ButtonListener()); 
+    aboutPanel.add(aboutBack);
+    add(aboutPanel);
+    
+    
+}
+  
+}
