@@ -91,6 +91,10 @@ public class Pokemon {
     return spd; 
   }
   
+  public void setHP(int backup){
+    this.hp = backup;
+  }
+  
   
   //this is the attacking pokemon, and p is the pokemon being attacked
   //this produces a String that is used in attack() in PokemonBattle so 

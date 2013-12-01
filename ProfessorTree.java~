@@ -1,15 +1,16 @@
 import java.util.*;
 import javafoundations.*;
-//import javafoundations.LinkedQueue; //for BFS
+import javafoundations.LinkedQueue; //for BFS
 import javafoundations.ArrayStack; //for DFS
 import java.util.*;
 import java.io.*;
 
-public class ProfessorTree<T> implements Iterable<T> {
+public class ProfessorTree<T> implements Iterable<T>{
   private T[] tree; 
   private int count; 
   private final int NOT_FOUND=-1;
   private Object top;
+ // private LinkedQueue teacherList; //keep list of teachers visited
 
   
   public ProfessorTree (T root) { 
@@ -233,31 +234,53 @@ public class ProfessorTree<T> implements Iterable<T> {
       return iter;
   }
   
-  
+  public ProfessorTree<String> createsGameTree(){ //pokemon
+    ProfessorTree<String> fam = new ProfessorTree<String>("KBot"); 
+    //ordered by CS classes taught- and then arbitrarily ordered because there overlap in the dept..
+    fam.setLeft("KBot", "Ellen"); 
+    fam.setRight("KBot", "Randy"); 
+    fam.setLeft("Ellen", "Scott"); 
+    fam.setRight("Ellen", "Lyn"); 
+    fam.setLeft("Scott", "Rhys"); 
+    fam.setRight("Scott", "Darakhshan"); 
+    fam.setLeft("Lyn", "Eni"); 
+    fam.setRight("Lyn", "Rita"); 
+    fam.setLeft("Randy", "Takis"); 
+    fam.setRight("Randy", "Orit"); 
+    fam.setLeft("Takis", "Stella"); 
+    fam.setRight("Takis", "Brian"); 
+    fam.setLeft("Orit", "Jean"); 
+    fam.setRight("Orit", "Sohie"); 
+    //System.out.println("fam.getRight("Orit"));
+    //System.out.println(fam); 
+    //System.out.println(fam.shuffle());
+    //System.out.println(fam); 
+    fam.shuffle(); 
+    //System.out.println(fam);
+    return fam; 
+  }
+    
+    
   public ProfessorTree<T> shuffle(){
-    ProfessorTree shuffled= new ProfessorTree(top);
+    ProfessorTree shuffled= new ProfessorTree (top);
     //T[] profs = (T[])new Object[count]; 
     T[] profs = tree; 
     Random r = new Random(); 
     
    
-    for (int i=0; i<count; i++) { 
-      int rand = r.nextInt(i+1);
+    for (int i=1; i<count; i++) { 
+      int rand = r.nextInt(i)+1; //offset so that 0 is not included (shuffling everything that is not kbot) 
       T hold = profs[rand]; 
-      if (hold.equals("KBot")) {
-        profs[rand]=profs[0];
-        profs[0]=hold;
-      } else{
-          
       profs[rand]=profs[i]; 
       profs[i]=hold; 
       
+    
     }
-    }
-  
+  /*
     for (int i=0; i<count; i++) { 
       System.out.println(profs[i]); 
     }
+    */ //this used to print out the professors in order
     return shuffled;
   }
      

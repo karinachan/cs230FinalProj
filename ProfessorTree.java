@@ -10,7 +10,7 @@ public class ProfessorTree<T> implements Iterable<T>{
   private int count; 
   private final int NOT_FOUND=-1;
   private Object top;
- // private LinkedQueue teacherList; //keep list of teachers visited
+
 
   
   public ProfessorTree (T root) { 
@@ -206,6 +206,9 @@ public class ProfessorTree<T> implements Iterable<T>{
     }
     return s;   
   }
+  
+  
+  //maybe write remove node 
   
   //  Set to return a level-order traversal of the tree (byGenerations())
   public Iterator<T> iterator() { 
