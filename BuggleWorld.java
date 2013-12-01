@@ -156,7 +156,11 @@ public class BuggleWorld extends JApplet
     initializeBagels();
     initializeStrings(); //[9/6/04]
     buggles = new Vector();
-    selectedBuggle = null;
+    Location start = new Location (5,1); 
+    selectedBuggle = new Buggle();
+    selectedBuggle.setPosition(start); 
+    //placeBagels(1, 9, 9);
+    placeProfessor(this.getGraphics(),9,9); 
     exec.reset();
     debugPrintln("Finish BuggleWorld.reset()");
   } 
@@ -188,9 +192,9 @@ public class BuggleWorld extends JApplet
     
     //newInstructionPanelItem("new Buggle()");
     newInstructionPanelItemPair("new Buggle()", "B");  
-    gamePad("north()","east()","south()","west()"); 
-    //newInstructionPanelItemPair("east()", "west()");
-    //newInstructionPanelItemPair("north()","south()");
+    gamePad("up()","right()","down()","left()"); 
+    //newInstructionPanelItemPair("right()", "left()");
+    //newInstructionPanelItemPair("up()","down()");
     //newInstructionPanelItemPair("getPosition()", "getHeading()");
     //newInstructionPanelItemPair("getColor()", "isBrushDown()");
     //newInstructionPanelItemPair("isFacingWall()", "isOverBagel()");
@@ -359,28 +363,28 @@ public class BuggleWorld extends JApplet
     } else if (arg.equals("new Buggle()")) {
       clearOutput();
       Buggle b = new Buggle(); // Note: new will automatically make b the selected buggle.
-    } else if (arg.equals("east()")) {
+    } else if (arg.equals("right()")) {
       clearOutput();
       try { 
-      selectedBuggle().east();
+      selectedBuggle().right();
       } catch (MoveException me) { 
       }
-    } else if (arg.equals("west()")) {
+    } else if (arg.equals("left()")) {
       clearOutput();
       try { 
-      selectedBuggle().west();
+      selectedBuggle().left();
       } catch (MoveException me) { 
       }
-    } else if (arg.equals("north()")) {
+    } else if (arg.equals("up()")) {
       clearOutput();
       try { 
-      selectedBuggle().north();
+      selectedBuggle().up();
       } catch (MoveException me) { 
       }
-    } else if (arg.equals("south()")) {
+    } else if (arg.equals("down()")) {
       clearOutput();
       try { 
-      selectedBuggle().south();
+      selectedBuggle().down();
       } catch (MoveException me) { 
       }
     } else if (arg.equals("getPosition()")) {
@@ -785,6 +789,63 @@ public class BuggleWorld extends JApplet
     debugPrintln("Calling BuggleGrid.draw() from BuggleWorld.add(Buggle)");
     grid.draw(b);
   }
+  
+  
+  //draws a professor sprite that's boxed in by walls (therefore, the 
+  //player can't move on top of the professor)
+  public void placeProfessor(Graphics g, int width, int height) { 
+    Randomizer rand = new Randomizer();
+    int x = rand.intBetween(2, width);
+    int y = rand.intBetween(2, height);
+
+    verticalWalls[x][y-1] = true;
+    verticalWalls[x-1][y-1] = true;
+    horizontalWalls[x-1][y] = true; 
+    horizontalWalls[x-1][y-1] = true; 
+    try { 
+    Image sprite = ImageIO.read(new File("pikan.png"));
+    g.drawImage(sprite, 1, 1, this); 
+    } catch (Exception e) { 
+    }
+  }
+  
+  public void placeBagels(int bagels, int width, int height)
+  {
+    Randomizer rand = new Randomizer();
+    if (bagels > 0) {
+      int x = rand.intBetween(1, width);
+      int y = rand.intBetween(2, height);
+      if (isBagelAt(new Location(x, y))) {
+        /*
+         System.out.println("lose (" + x + ", "
+         + y + ")");
+         */
+        // We lose; try again!
+        placeBagels(bagels, width, height);
+      } else {
+        // We win; place a bagel
+        /*
+         System.out.println("win (" + x + ", "
+         + y + ")");
+         */
+        /*addHorizontalWall(x,y); 
+        addVeritcalWall(x,y); 
+        addHorizontalWall(x-1, y-1); 
+        addVerticalWall(x-1, y-1); 
+        */
+        
+        //boxing in the professor
+        verticalWalls[x][y-1] = true;
+        verticalWalls[x-1][y-1] = true;
+        horizontalWalls[x-1][y] = true; 
+        horizontalWalls[x-1][y-1] = true; 
+        
+        addBagel(new Location(x, y));
+        placeBagels(bagels - 1, width, height);
+      }
+    }
+  }
+  
   
   public boolean wallInDirection(Location p, Direction d) {
     // Indicate whether there is a wall in the d direction of the grid cell at point p.
@@ -1655,6 +1716,7 @@ class Buggle {
   //     The class variable BuggleWorld.currentWorld holds the currently active
   //     instance of BuggleWorld. 
   
+  private char direction = 's'; 
   private BuggleWorld world;  // The world to which the Buggle belongs.
   private Location position;   // Location of the Buggle
   private static final int _defaultX = 1;
@@ -1725,12 +1787,13 @@ class Buggle {
 //      }
 //  }
   
-  public void east() throws MoveException {
-    exec.waitIfNecessary("east()");
+  public void right() throws MoveException {
+    this.direction='e'; 
+    exec.waitIfNecessary("right()");
     eastStep();
   }
 
-  // [lyn, 9/2/07] eastStep() is the underlying primitive used by east() and forward(n)
+  // [lyn, 9/2/07] eastStep() is the underlying primitive used by right() and forward(n)
   //moves the buggle east
   public void eastStep() throws MoveException {
     if (world.wallInDirection(position, heading))
@@ -1774,15 +1837,16 @@ class Buggle {
 //    }
 //  }
   
-  public void west() throws MoveException {
-    exec.waitIfNecessary("west()");
+  public void left() throws MoveException {
+    this.direction='w'; 
+    exec.waitIfNecessary("left()");
     try { 
     westStep();
     } catch (MoveException me) { 
     }
   }
 
-  // [lyn, 9/2/07] westStep() is the underlying primitive used by west() and backward(n)
+  // [lyn, 9/2/07] westStep() is the underlying primitive used by left() and backward(n)
   //changed the way Buggles handle going backwards (instead of changing heading, just
   //hardcoded everything to be opposite) b/c otherwise the Buggle would flip
   public void westStep() throws MoveException {
@@ -1836,21 +1900,23 @@ class Buggle {
     world.buggleChanged(this);
   }
   
-  public void north() throws MoveException {
+  public void up() throws MoveException {
+    this.direction='n';
+    
     if (world.wallInDirection(position, heading.north()))
       throw new MoveException("FORWARD: Can't move through wall!");
     //if (trailmode)
-      //world.markTrail(position, color);
+    //world.markTrail(position, color);
     Location oldPosition = position;
     position = world.addCoordinates(position, heading.north().toLocation());
     world.buggleMoved(this, oldPosition, position);
-    
-//    exec.waitIfNecessary("north()");
-//    heading = heading.north();
+//    exec.waitIfNecessary("up()");
+//    heading = heading.up();
 //    world.buggleChanged(this);
   }
   
-  public void south() throws MoveException {
+  public void down() throws MoveException {
+    this.direction='s'; 
     if (world.wallInDirection(position, heading.south()))
       throw new MoveException("FORWARD: Can't move through wall!");
     //if (trailmode)
@@ -1858,11 +1924,7 @@ class Buggle {
     Location oldPosition = position;
     position = world.addCoordinates(position, heading.south().toLocation());
     world.buggleMoved(this, oldPosition, position);
-    
-    //System.out.println("south();");
-//    exec.waitIfNecessary("south()");
-//    heading = heading.south();
-//    world.buggleChanged(this);
+    //System.out.println("down();");
   }
   
   public boolean isFacingWall () {
@@ -2003,10 +2065,28 @@ class Buggle {
       g.setColor(unselectedBuggleOutlineColor);
     }
     try { 
-    Image sprite = ImageIO.read(new File("sprite.png"));
-    g.drawImage(sprite, p1.x, p1.y, world); 
+        //Image sprite = ImageIO.read(new File("sprite.png"));
+      //g.drawImage(sprite, p1.x, p1.y, world); 
+      
+      //Image sprite = ImageIO.read(new File("sprite.png"));
+      if (direction=='n') { 
+        Image sprite = ImageIO.read(new File("pikan.png"));
+        g.drawImage(sprite, p1.x, p1.y, world); 
+      } else if (direction=='w') { 
+        Image sprite = ImageIO.read(new File("pikaw.png"));
+        g.drawImage(sprite, p1.x, p1.y, world); 
+      } else if (direction=='e') { 
+        Image sprite = ImageIO.read(new File("pikae.png"));
+        g.drawImage(sprite, p1.x, p1.y, world); 
+      } else if (direction=='s') { 
+        Image sprite = ImageIO.read(new File("pikas.png"));
+        g.drawImage(sprite, p1.x, p1.y, world); 
+      }
+      
     } catch (Exception e) { 
     }
+    
+      
 //          gfx.drawImage(img, 0,0, this); 
     //g.drawPolygon(xs, ys, 4);
   }
