@@ -239,12 +239,22 @@ public class ProfessorTree<T> implements Iterable<T> {
     //T[] profs = (T[])new Object[count]; 
     T[] profs = tree; 
     Random r = new Random(); 
+    
+   
     for (int i=0; i<count; i++) { 
       int rand = r.nextInt(i+1);
       T hold = profs[rand]; 
+      if (hold.equals("KBot")) {
+        profs[rand]=profs[0];
+        profs[0]=hold;
+      } else{
+          
       profs[rand]=profs[i]; 
       profs[i]=hold; 
+      
     }
+    }
+  
     for (int i=0; i<count; i++) { 
       System.out.println(profs[i]); 
     }
@@ -274,6 +284,7 @@ public class ProfessorTree<T> implements Iterable<T> {
     //System.out.println(fam.shuffle());
     System.out.println(fam); 
     fam.shuffle(); 
+    System.out.println(fam);
   
   }
 }
