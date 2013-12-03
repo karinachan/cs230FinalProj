@@ -6,6 +6,8 @@ import javax.swing.*;  // ****
 import javax.imageio.*; 
 import java.io.*; 
 
+import javax.swing.border.*;
+
 //**************************************************************************
 public class BuggleWorld extends JApplet
   implements ActionListener {
@@ -57,6 +59,7 @@ public class BuggleWorld extends JApplet
   private int buggleDelay = 0; // [9/6/04] Amount of time buggle waits between moves.
   // [9/6/04] Can be used to slow down buggle. 
   private boolean debugOn = false;
+  private JLabel scrollText; 
   
   public void debugPrintln(String s) {
     if (debugOn) 
@@ -156,11 +159,12 @@ public class BuggleWorld extends JApplet
     initializeBagels();
     initializeStrings(); //[9/6/04]
     buggles = new Vector();
+    //creates boundaries and professor buggle
+    createWorld(this.getGraphics(),9,9); 
     Location start = new Location (5,1); 
     selectedBuggle = new Buggle();
     selectedBuggle.setPosition(start); 
     //placeBagels(1, 9, 9);
-    placeProfessor(this.getGraphics(),9,9); 
     exec.reset();
     debugPrintln("Finish BuggleWorld.reset()");
   } 
@@ -171,13 +175,17 @@ public class BuggleWorld extends JApplet
     this.makeInstructionPanel(); // Make panel for instructions to the selected buggle
     this.makeControlPanel(); // Make panel for controlling execution of the buggle program
     // this.makeOutput();  // Make the area for displaying textual feedback
-
+    
     Container c = getContentPane(); //****
+    
     debugPrintln("Setting world layout");
     c.setLayout( new BorderLayout() );
     setBackground( backgroundColor );
-    c.add( "Center", grid );
-    c.add( "East", instructionPanel );
+    c.add(grid, BorderLayout.CENTER); 
+    c.add(instructionPanel, BorderLayout.EAST); 
+    //c.add( "Center", grid );
+    //c.add( "East", instructionPanel );
+    //c.add( "South", scrollText); 
 //    c.add( "South", controlPanel ); 
     // this.add("North", output);
   }
@@ -187,11 +195,13 @@ public class BuggleWorld extends JApplet
     instructionPanel = new JPanel();
     //Container cp = instructionPanel.getContentPane(); //****
     //cp.setLayout(new GridLayout(11,1));
-    instructionPanel.setLayout(new GridLayout(2,3));
+    instructionPanel.setLayout(new GridLayout(3,3));
     instructionPanel.setBackground(Color.green);
     
     //newInstructionPanelItem("new Buggle()");
-    newInstructionPanelItemPair("new Buggle()", "B");  
+    //scrollText = new JLabel ("Hi there! Welcome to the world of Pokemon!"); 
+    newInstructionPanelItem("<html>Hello there!<p>hi<p>hi<p>hi<p>hi<p>hi<p>hi<p>hi<p>hi<html>"); 
+    newInstructionPanelItemPair("aButton()", "bButton()");  
     gamePad("up()","right()","down()","left()"); 
     //newInstructionPanelItemPair("right()", "left()");
     //newInstructionPanelItemPair("up()","down()");
@@ -202,10 +212,14 @@ public class BuggleWorld extends JApplet
   }
   
   private void newInstructionPanelItem (String s) {
-    JButton b = new JButton(s);
-    b.setBackground(buttonBackgroundColor);
-    instructionPanel.add(b);
-    b.addActionListener(this); // ***
+    scrollText = new JLabel(s); 
+    JScrollPane scrollBox = new JScrollPane(scrollText, 
+                                           JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, 
+                                           JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    scrollBox.setBorder(new EmptyBorder(10, 10, 10, 10));  
+    //scrollBox.setBackground(buttonBackgroundColor);
+    instructionPanel.add(scrollBox);
+//    scrollText.addActionListener(this); // ***
   }
   
   private void gamePad(String n, String e, String s, String w) { 
@@ -360,6 +374,20 @@ public class BuggleWorld extends JApplet
       // Note: grid.paint() is not a part of reset() itself, because reset() is overridable
       // by programmer, and don't want to draw grid until know all of the state changes. 
       grid.paint(); // draw the BuggleWorld grid after all state updates have been made. 
+    } else if (arg.equals("bButton()")) { 
+      System.out.println("B"); 
+    } else if (arg.equals("aButton()")) { 
+      //when the player is next to the professor, execute this code when 
+      //the player presses aButton to talk to the professor
+      if (selectedBuggle.getPosition().equals(new Location(5,7))) { 
+        System.out.println("Hi, we're talking!"); 
+        //stores previous text
+        String s = scrollText.getText(); 
+        //adds more text
+        scrollText.setText(s + "oh, hello!"); 
+      } else {
+      System.out.println("A"); 
+      }
     } else if (arg.equals("new Buggle()")) {
       clearOutput();
       Buggle b = new Buggle(); // Note: new will automatically make b the selected buggle.
@@ -793,20 +821,38 @@ public class BuggleWorld extends JApplet
   
   //draws a professor sprite that's boxed in by walls (therefore, the 
   //player can't move on top of the professor)
-  public void placeProfessor(Graphics g, int width, int height) { 
+  public void createWorld(Graphics g, int width, int height) { 
     Randomizer rand = new Randomizer();
-    int x = rand.intBetween(2, width);
-    int y = rand.intBetween(2, height);
-
+    //int x = rand.intBetween(2, width);
+    //int y = rand.intBetween(2, height);
+    
+    int x = 5; 
+    int y = 8; 
+    
+    //cages in the professor
     verticalWalls[x][y-1] = true;
     verticalWalls[x-1][y-1] = true;
+    verticalWalls[x][y-2] = true; 
+    verticalWalls[x-1][y-2] = true;    
     horizontalWalls[x-1][y] = true; 
     horizontalWalls[x-1][y-1] = true; 
-    try { 
-    Image sprite = ImageIO.read(new File("pikan.png"));
-    g.drawImage(sprite, 1, 1, this); 
-    } catch (Exception e) { 
+    
+    //sets up the stadium
+    for (int i=0; i<4; i++) { 
+      verticalWalls[x-1-i][y-2-i] = true; 
+      verticalWalls[x+1+i][y-3-i] = true; 
+      horizontalWalls[x-2-i][y-2-i] = true; 
+      horizontalWalls[x+i][y-2-i] = true; 
+/*      verticalWalls[x][y] = true; 
+      horizontalWalls[x][y] = true; 
+      horizontalWalls[x][y] = true; */
     }
+    
+    
+    Buggle prof = new Buggle(); 
+    Location profLoc = new Location (x,y); 
+    prof.setPosition(profLoc); 
+    
   }
   
   public void placeBagels(int bagels, int width, int height)
@@ -837,6 +883,9 @@ public class BuggleWorld extends JApplet
         //boxing in the professor
         verticalWalls[x][y-1] = true;
         verticalWalls[x-1][y-1] = true;
+        verticalWalls[x][y-2] = true; 
+        verticalWalls[x-1][y-2] = true; 
+        
         horizontalWalls[x-1][y] = true; 
         horizontalWalls[x-1][y-1] = true; 
         
@@ -1851,8 +1900,8 @@ class Buggle {
   //hardcoded everything to be opposite) b/c otherwise the Buggle would flip
   public void westStep() throws MoveException {
     //heading = heading.opposite();
-    if (world.wallInDirection(position, heading.opposite()))
-      throw new MoveException("");
+    if (world.wallInDirection(position, heading.opposite())) 
+     throw new MoveException("");
 //      throw new BuggleException("BACKWARD: Can't move through wall!");
     //if (trailmode)
       //world.markTrail(position, color);
