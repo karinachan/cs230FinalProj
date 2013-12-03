@@ -1,3 +1,12 @@
+//every method must be commented as such: 
+
+/** 
+ * @param
+ * @return 
+ * 
+ */
+
+
 import java.awt.*;
 import java.awt.event.*; // ***
 import java.applet.*;  // applet.* ??
@@ -59,7 +68,8 @@ public class BuggleWorld extends JApplet
   private int buggleDelay = 0; // [9/6/04] Amount of time buggle waits between moves.
   // [9/6/04] Can be used to slow down buggle. 
   private boolean debugOn = false;
-  private JLabel scrollText; 
+  private JTextArea scrollText; 
+  private JScrollPane scrollBox;
   
   public void debugPrintln(String s) {
     if (debugOn) 
@@ -80,8 +90,9 @@ public class BuggleWorld extends JApplet
       public void run() { // this is Java's thread run() method, not BuggleWorlds!
         JFrame.setDefaultLookAndFeelDecorated(true); // enable window decorations. 
         JFrame frame = new JFrame(name); // create and set up the window.
-        frame.setSize(800, 500); // Default frame size (should make these settable variables!)
-        
+        frame.setSize(750, 450); // Default frame size (should make these settable variables!)
+        //dont't reset the size
+        frame.setResizable(false); 
         // [lyn. 8/30/07] Using EXIT_ON_CLOSE empirically exits all instances of an application.
         //   Use DISPOSE_ON_CLOSE to get rid of just one. 
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE); 
@@ -192,10 +203,13 @@ public class BuggleWorld extends JApplet
     //Container cp = instructionPanel.getContentPane(); //****
     //cp.setLayout(new GridLayout(11,1));
     //to accomodate the JLabel scrollbox, 2 buttons, and gamepad
-    instructionPanel.setLayout(new GridLayout(3,3));
+    instructionPanel.setLayout(new GridLayout(4,4));
     instructionPanel.setBackground(Color.green);
     //creates the scrollbox where game text is displayed
-    newInstructionPanelScroll("<html>Hello there!<p>hi<p>hi<p>hi<p>hi<p>hi<p>hi<p>hi<p>hi<html>"); 
+    newInstructionPanelScroll("Welcome to Pokemon CS Land"); 
+    JPanel bag = new JPanel(); 
+    bag.add(new JLabel("This is where the bag could go.")); 
+    newInstructionPanelItem(bag); 
     //2 buttons
     newInstructionPanelItemPair("aButton()", "bButton()");  
     //gamePad
@@ -203,11 +217,10 @@ public class BuggleWorld extends JApplet
   }
   
   private void newInstructionPanelScroll (String s) {
-    scrollText = new JLabel(s); 
+    scrollText = new JTextArea(s); 
     //puts scrollText (which we change throughout the game) in a ScrollPane 
     //(allowing the player to see past interactions)
-    JScrollPane scrollBox = new JScrollPane(scrollText, 
-                                            JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, 
+    scrollBox = new JScrollPane(scrollText, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, 
                                             JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     scrollBox.setBorder(new EmptyBorder(10, 10, 10, 10));  
     instructionPanel.add(scrollBox);
@@ -342,13 +355,16 @@ public class BuggleWorld extends JApplet
       //when the player is next to the professor, execute this code when 
       //the player presses aButton to talk to the professor
       if (selectedBuggle.getPosition().equals(new Location(5,7))) { 
-        System.out.println("Hi, we're talking!"); 
         //stores previous text
         String s = scrollText.getText(); 
         //adds more text
-        scrollText.setText(s + "oh, hello!"); 
-      } else {
-        System.out.println("A"); 
+        scrollText.setText(s + "\nOh, hello! Welcome to my class."); 
+      } else if (selectedBuggle.getPosition().equals(new Location(5,8))){
+        String s = scrollText.getText(); 
+        scrollText.setText(s + "\nHey! Stop standing on me!"); 
+      } else { 
+        String s = scrollText.getText(); 
+        scrollText.setText(s + "\nPlease come closer!"); 
       }
     } else if (arg.equals("new Buggle()")) {
       clearOutput();
@@ -613,11 +629,10 @@ public class BuggleWorld extends JApplet
     grid.draw(b);
   }
   
-  
   //draws a professor sprite that's boxed in by walls (therefore, the 
   //player can't move on top of the professor)
   public void createWorld(Graphics g, int width, int height) { 
-    Randomizer rand = new Randomizer();
+    //Randomizer rand = new Randomizer();
     //int x = rand.intBetween(2, width);
     //int y = rand.intBetween(2, height);
     
@@ -626,23 +641,17 @@ public class BuggleWorld extends JApplet
     
     //cages in the professor
     verticalWalls[x][y-1] = true;
-    verticalWalls[x-1][y-1] = true;
-    verticalWalls[x][y-2] = true; 
-    verticalWalls[x-1][y-2] = true;    
+    verticalWalls[x-1][y-1] = true; 
     horizontalWalls[x-1][y] = true; 
-    horizontalWalls[x-1][y-1] = true; 
+    //horizontalWalls[x-1][y-1] = true; 
     
     //sets up the stadium
     for (int i=0; i<4; i++) { 
       verticalWalls[x-1-i][y-2-i] = true; 
-      verticalWalls[x+1+i][y-3-i] = true; 
+      verticalWalls[x+i][y-2-i] = true; 
       horizontalWalls[x-2-i][y-2-i] = true; 
       horizontalWalls[x+i][y-2-i] = true; 
-      /*      verticalWalls[x][y] = true; 
-       horizontalWalls[x][y] = true; 
-       horizontalWalls[x][y] = true; */
     }
-    
     
     Buggle prof = new Buggle(); 
     Location profLoc = new Location (x,y); 
@@ -652,10 +661,10 @@ public class BuggleWorld extends JApplet
   
   public void placeBagels(int bagels, int width, int height)
   {
-    Randomizer rand = new Randomizer();
+    //Randomizer rand = new Randomizer();
     if (bagels > 0) {
-      int x = rand.intBetween(1, width);
-      int y = rand.intBetween(2, height);
+      //int x = rand.intBetween(1, width);
+      //int y = rand.intBetween(2, height);
         placeBagels(bagels, width, height);
     }
   }
@@ -907,10 +916,51 @@ class BuggleGrid extends Canvas //{
       Buggle next = (Buggle) bugs.nextElement();
       this.draw(next);
     }
+    try { 
+      Image bg = ImageIO.read(new File("tile2.png"));
+      for (int i=0; i<5; i++) { 
+        for (int j=9; j>=0; j--) { 
+          //drawInCell(bg, new Location (i,j));           
+        }
+      }
+    } catch (Exception e) { 
+    }
     // [9/6/04] Causes a painting loop!
     // world.debugPrintln("calling repaint() from BuggleGrid.paintGrid()");
     // repaint(); //***** needed this ****
   }
+  
+  
+  
+  
+  public void paintCell (Graphics g, Image img, int x, int y) {
+    //System.out.println("Draw in rect: g = " + g + "; rgt = " + r);
+    // Draw myself in given rectangle of graphics.
+    // Assume simple triangle shape for now; do something cuter in future.
+    
+    // Compute triangle based on direction; there must be a cleverer way to do this!
+    /*Point p1 = new Point(0,0);
+    double insetFactor = 0.5;
+    int insetX = (int) Math.floor(insetFactor * r.width); // unlike with bagels, no grid line to consider
+    int insetY = (int) Math.floor(insetFactor * r.height); // unlike with bagels, no grid line to consider
+    int width = r.width - 1; // [lyn, 11/11/06] Decrement so additions make sense in discrete grid
+    int height = r.height - 1;
+    p1.x = r.x + insetX;
+    p1.y = r.y + insetY;
+    */
+    g.setPaintMode();
+    try { 
+      System.out.println("painting"); 
+        Image sprite = img; 
+        g.drawImage(sprite, x, y, this); 
+    } catch (Exception e) { 
+    }
+  }
+  
+  
+  
+  
+  
   
   public void drawHorizontalWall(int x, int y) {
     // Graphics gfx = this.getGraphics();
@@ -1037,6 +1087,11 @@ class BuggleGrid extends Canvas //{
       //**** Thread.yield(); //***
       //System.out.println("drawCell after yield.");
     }
+  }
+  
+  public void drawInCell(Image img, Location p) { 
+    Rectangle r = cellRectangle(p); 
+    gfx.drawImage(img, r.x, r.y, world); 
   }
   
   public void drawMark (Color c, Location p) {
@@ -1587,15 +1642,6 @@ class Buggle {
     return world.markColorAt(position); // [lyn, 11/11/06] Now guaranteed to return color, never null
   }
   
-//  // [lyn, 9/2/07] Modified forward(n) and backward(n) to appear as 
-//  //   atomic steps for stepping purposes. 
-//  public void backward (int n) throws BuggleException {
-//    exec.waitIfNecessary("backward(" + n + ")");
-//    for (int i = 0;  i < n; i++) {
-//      westStep();
-//    }
-//  }
-  
   public void left() throws MoveException {
     this.direction='w'; 
     exec.waitIfNecessary("left()");
@@ -1752,6 +1798,7 @@ class Buggle {
     //System.out.println("Draw in rect: g = " + g + "; rgt = " + r);
     // Draw myself in given rectangle of graphics.
     // Assume simple triangle shape for now; do something cuter in future.
+    // LZ: changed them to Pikachus C:
     
     // Compute triangle based on direction; there must be a cleverer way to do this!
     Point p1 = new Point(0,0);
@@ -1764,10 +1811,6 @@ class Buggle {
     g.setPaintMode();
     g.setColor(color);
     try { 
-      //Image sprite = ImageIO.read(new File("sprite.png"));
-      //g.drawImage(sprite, p1.x, p1.y, world); 
-      
-      //Image sprite = ImageIO.read(new File("sprite.png"));
       if (direction=='n') { 
         Image sprite = ImageIO.read(new File("pikan.png"));
         g.drawImage(sprite, p1.x, p1.y, world); 
