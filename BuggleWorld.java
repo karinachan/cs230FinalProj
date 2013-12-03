@@ -90,7 +90,7 @@ public class BuggleWorld extends JApplet
       public void run() { // this is Java's thread run() method, not BuggleWorlds!
         JFrame.setDefaultLookAndFeelDecorated(true); // enable window decorations. 
         JFrame frame = new JFrame(name); // create and set up the window.
-        frame.setSize(750, 450); // Default frame size (should make these settable variables!)
+        frame.setSize(700, 450); // Default frame size (should make these settable variables!)
         //dont't reset the size
         frame.setResizable(false); 
         // [lyn. 8/30/07] Using EXIT_ON_CLOSE empirically exits all instances of an application.
@@ -218,11 +218,12 @@ public class BuggleWorld extends JApplet
   
   private void newInstructionPanelScroll (String s) {
     scrollText = new JTextArea(s); 
+    scrollText.setEditable(false); 
     //puts scrollText (which we change throughout the game) in a ScrollPane 
     //(allowing the player to see past interactions)
     scrollBox = new JScrollPane(scrollText, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, 
                                             JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-    scrollBox.setBorder(new EmptyBorder(10, 10, 10, 10));  
+    //scrollBox.setBorder(new EmptyBorder(10, 10, 10, 10));  
     instructionPanel.add(scrollBox);
   }
   
@@ -823,16 +824,8 @@ class BuggleGrid extends Canvas //{
     gfx.setColor(gridLineColor);
     gfx.fillRect(0, 0, canvasSize.width, canvasSize.height);
     
-    //add image here
-    /*
-     try {
-     Image img = ImageIO.read(new File("background.png"));
-     gfx.drawImage(img, 0,0, this); 
-     
-     } catch (IOException e) {
-     e.printStackTrace();
-     }
-     */
+   
+
     
     // [lyn, 11/11/06] Now display the grid itself.
     gfx.setColor(floorColor);
@@ -842,6 +835,22 @@ class BuggleGrid extends Canvas //{
     int top = gridRect.y;
     int bottom = top + gridRect.height - 1;
     gfx.setColor(gridLineColor);
+    
+    
+    
+    
+    //making the background
+    try { 
+      Image bg = ImageIO.read(new File("tile.png"));
+      for (int i=0; i<10; i++) { 
+        //drawInCell(bg, new Location(i,9)); 
+      }
+      System.out.println("yay"); 
+    } catch (Exception e) { 
+      System.out.println("nooooo"); 
+    }
+    
+    
     // Paint horizontal grid lines
     for (int j = 0; j <= world.rows; j++) {
       gfx.drawLine(left, gridRect.y + j * cellHeight, right, gridRect.y + j * cellHeight);
@@ -915,15 +924,6 @@ class BuggleGrid extends Canvas //{
     while ( bugs.hasMoreElements() ) {
       Buggle next = (Buggle) bugs.nextElement();
       this.draw(next);
-    }
-    try { 
-      Image bg = ImageIO.read(new File("tile2.png"));
-      for (int i=0; i<5; i++) { 
-        for (int j=9; j>=0; j--) { 
-          //drawInCell(bg, new Location (i,j));           
-        }
-      }
-    } catch (Exception e) { 
     }
     // [9/6/04] Causes a painting loop!
     // world.debugPrintln("calling repaint() from BuggleGrid.paintGrid()");
