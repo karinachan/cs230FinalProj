@@ -111,7 +111,7 @@ public class Pokemon {
   
   
   public String toString() { 
-    String s="\n****"+ "\nPokemon: " + name + 
+    String s="\nPokemon: " + name + 
       "\nNickname: " + nickName +
       "\nTrainer: " + trainer + 
       "\nHP: " + hp + 

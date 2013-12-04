@@ -12,28 +12,33 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
-public class AboutPanel extends JPanel
+public class WelcomePanel extends JPanel
 { 
-
+  
   public WelcomePanel()
   {
     setLayout(new BorderLayout()); //sets the layout to border layout
-    setBackground (new Color (237, 219, 255)); //sets the color background
+    setBackground (new Color (0, 0, 0)); //sets the color background
     
     //creates labels with text on them
-    JLabel l1 = new JLabel ("<html> <strong> HOW TO USE THIS GUI:</strong><br>Follow the tabs from left to right to add and sort grad schools."
-                              +"<br>------------------------<br>Created by Karina Chan and Alice Wong");
-    l1.setFont(new Font("Rockwell", Font.PLAIN, 16));
-   
-    JLabel l2 = new JLabel ("------------------------");
-    JLabel l3 = new JLabel ("Created by Karina Chan and Alice Wong");
-   
-    //adds labels and a picture
-    add (l1);
-    add(new JSeparator (JSeparator.VERTICAL), BorderLayout.LINE_START);
     
-    JLabel picLabel = new JLabel("<html><img src='https://i.chzbgr.com/mediumSquare/1814227712/1F7D4A47/1'></html>");
-    add (picLabel,BorderLayout.LINE_END);
-    picLabel.setBorder(new EmptyBorder( 0, 0, 0, 50 ) );
+    JLabel picLabel = new JLabel("<html><img src='http://i.imgur.com/K4hCVzc.png'></html>");
+    add (picLabel, BorderLayout.CENTER);
+    
+    picLabel.setBorder(new EmptyBorder( 0, 50, 50, 50 ) );
+    JLabel l1 = new JLabel ("<html> <strong> <h1 style='color: white; margin-left: 50px; margin-top: 25px; margin-bottom: 5px;'> WELCOME TO POKEMON: WELLESLEY CS EDITION </h1> </strong><br>"
+                              +"<br>Created by Karina Chan and Laura Zeng");
+    l1.setFont(new Font("Rockwell", Font.PLAIN, 16));
+    
+    
+    JLabel l2 = new JLabel ("------------------------");
+    JLabel l3 = new JLabel ("<html><h3 style='color: white; margin-left: 50px; margin-top: 5px; '> Follow the tabs in order to play. GET YOUR CS DEGREE.</h3></html>");
+    l3.setFont(new Font("Rockwell", Font.PLAIN, 16));
+    
+    //adds labels and a picture
+    add (l1, BorderLayout.PAGE_START);
+    add(l3, BorderLayout.PAGE_END);
+    //add(new JSeparator (JSeparator.VERTICAL));
+    
   }
 }

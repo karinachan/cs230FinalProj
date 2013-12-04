@@ -48,7 +48,7 @@ public class BuggleWorld extends JApplet
   private JPanel setDelayPanel; // [9/6/04]
   //private JLabel output;
   public BuggleExecuter exec;
-  private Buggle selectedBuggle;  // Currently selected buggle.
+  private Buggle selectedBuggle, prof;  // Currently selected buggle.
   // Menu items apply to this buggle. 
   // By default, it's the most recently created buggle. 
   // Color selected in colorChoices menu
@@ -70,6 +70,7 @@ public class BuggleWorld extends JApplet
   private boolean debugOn = false;
   private JTextArea scrollText; 
   private JScrollPane scrollBox;
+  //private PokemonBattle set; //new battle every round... ? I DONT KNOW IF THIS SHOULD BE CHANGED LATER; also have Prof as a instnace var with selected bug
   
   public void debugPrintln(String s) {
     if (debugOn) 
@@ -101,15 +102,33 @@ public class BuggleWorld extends JApplet
         //   so that attempts to reset dimensions will work. 
         
         JPanel test= new JPanel(new BorderLayout()); //instead of frame, made the test the borderlayout
-        JTabbedPane tp = new JTabbedPane();
-        //added pane here
+        WelcomePanel wel= new WelcomePanel();
         
+        JTabbedPane tp = new JTabbedPane();
+        
+        //added pane here
+        tp.add("Welcome!",wel); //tab for welcome
         test.add(applet, BorderLayout.CENTER); // add applet to window
         tp.add("Play", test); //tab for playing 
-        JPanel testPanel= new JPanel();
-        JLabel comment= new JLabel("mpo"); //so this works, test AboutPanel() again... 
-        testPanel.add(comment); 
-        tp.add("About Us", testPanel);//SEE ABOVE ugh 
+        
+        
+        
+        
+        
+        
+        //REMOVE GREEN BACKGROUND
+        //1. maybe have an "insert your name" 
+        //2. Proceed to next panel type of thing? 
+        
+        
+        
+        
+        
+        //JPanel testPanel= new JPanel();
+        //JLabel comment= new JLabel("mpo"); //so this works, test AboutPanel() again... 
+        //testPanel.add(comment); 
+        //tp.add("About Us", testPanel);//SEE ABOVE ugh 
+        tp.add("About Us", new AboutPanel());
         frame.add(tp);
         frame.setVisible(true); // display the window.
         applet.init(); // initialize the applet
@@ -363,6 +382,12 @@ public class BuggleWorld extends JApplet
       grid.paint(); // draw the BuggleWorld grid after all state updates have been made. 
     } else if (arg.equals("bButton()")) { 
       System.out.println("B"); 
+      String s = scrollText.getText(); 
+      scrollText.setText("YOU ARE:"+ selectedBuggle().getBPokemon());
+      //KARINA TRYING TO SHOW THE POKEMON INTEGRATION WITH THE BUGGLE 
+      
+      //12/4/13
+      
     } else if (arg.equals("aButton()")) { 
       //when the player is next to the professor, execute this code when 
       //the player presses aButton to talk to the professor
@@ -371,6 +396,9 @@ public class BuggleWorld extends JApplet
         String s = scrollText.getText(); 
         //adds more text
         scrollText.setText(s + "\nOh, hello! Welcome to my class."); 
+        System.out.println(new PokemonBattle(selectedBuggle().getBPokemon(), prof.getBPokemon()));
+        
+        
       } else if (selectedBuggle.getPosition().equals(new Location(5,8))){
         String s = scrollText.getText(); 
         scrollText.setText(s + "\nHey! Stop standing on me!"); 
@@ -665,7 +693,8 @@ public class BuggleWorld extends JApplet
       horizontalWalls[x+i][y-2-i] = true; 
     }
     
-    Buggle prof = new Buggle(); 
+    //Buggle prof = new Buggle(); 
+    prof= new Buggle();
     Location profLoc = new Location (x,y); 
     prof.setPosition(profLoc); 
     
@@ -1563,6 +1592,12 @@ class Buggle {
   private Location position;   // Location of the Buggle
   private static final int _defaultX = 1;
   private static final int _defaultY = 1;
+  
+  //KARINA EDITS 12/4/13
+  private Pokemon you; 
+    
+    
+    
   private Direction heading;
   private Color color;       // Color of the Buggle.
   private boolean trailmode = true;
@@ -1576,6 +1611,8 @@ class Buggle {
   
   public Buggle() {
     this(_defaultColor, _defaultX, _defaultY, BuggleWorld.currentWorld);
+    //KARINA EDIT 12/4/13
+    you= new Pokemon("Type", "Nickname", "Yourname");
   }
   
   public Buggle (BuggleWorld w) {
@@ -1611,6 +1648,14 @@ class Buggle {
     //System.out.println("This buggle = " + this );
     world.add(this);
   }
+  
+  
+  //KARINA EDIT 12/4/13
+  public Pokemon getBPokemon(){
+    return you;
+  }
+  
+  //EDITED BY KARINA- TRYING TO GET THE POKEMON
   
   public String toString () {
     return "[position = (" + position.x + ", " + position.y + ")"

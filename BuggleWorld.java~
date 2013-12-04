@@ -99,7 +99,35 @@ public class BuggleWorld extends JApplet
         
         // [lyn. 8/30/07] Need to add to frame and make visible *before* init 
         //   so that attempts to reset dimensions will work. 
-        frame.add(applet, BorderLayout.CENTER); // add applet to window
+        
+        JPanel test= new JPanel(new BorderLayout()); //instead of frame, made the test the borderlayout
+        WelcomePanel wel= new WelcomePanel();
+        
+        JTabbedPane tp = new JTabbedPane();
+        
+        //added pane here
+        tp.add("Welcome!",wel); //tab for welcome
+        test.add(applet, BorderLayout.CENTER); // add applet to window
+        tp.add("Play", test); //tab for playing 
+        
+        
+        
+        
+        
+        
+        //REMOVE GREEN BACKGROUND
+        
+        
+        
+        
+        
+        
+        //JPanel testPanel= new JPanel();
+        //JLabel comment= new JLabel("mpo"); //so this works, test AboutPanel() again... 
+        //testPanel.add(comment); 
+        //tp.add("About Us", testPanel);//SEE ABOVE ugh 
+        tp.add("About Us", new AboutPanel());
+        frame.add(tp);
         frame.setVisible(true); // display the window.
         applet.init(); // initialize the applet
         // [lyn. 8/30/07] Need to make visible again *after* init in case
