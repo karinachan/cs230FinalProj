@@ -23,7 +23,7 @@ public class AboutPanel extends JPanel {
     
     //aboutback.addActionListener(new ButtonListener(aboutback)); 
     aboutPanel.add(aboutback);
-    aboutPanel.setVisible(false); //hidden until pressed
+    //aboutPanel.setVisible(false); //hidden until pressed
     
     //add(aboutPanel);
   }

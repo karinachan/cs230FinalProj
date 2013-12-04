@@ -13,8 +13,8 @@ public class HomeGUI
   //-----------------------------------------------------------------
   public static void main (String[] args)
   {
-    
-    BuggleWorld applet = new BuggleWorld(); 
+    //THIS RUNS THE BUGGLEWORLD FROM THE FRAME APPLET NOT THE TABBED PANEL.
+    BuggleWorld applet = new BuggleWorld();  
     JFrame.setDefaultLookAndFeelDecorated(true); // enable window decorations. 
         JFrame frame = new JFrame("POKEMON"); // create and set up the window.
         frame.setSize(700, 400); // Default frame size (should make these settable variables!)
