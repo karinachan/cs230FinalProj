@@ -26,18 +26,17 @@ public class WelcomePanel extends JPanel
     add (picLabel, BorderLayout.CENTER);
     
     picLabel.setBorder(new EmptyBorder( 0, 50, 50, 50 ) );
-    JLabel l1 = new JLabel ("<html> <strong> <h1 style='color: white; margin-left: 50px; margin-top: 25px; margin-bottom: 5px;'> WELCOME TO POKEMON: WELLESLEY CS EDITION </h1> </strong><br>"
-                              +"<br>Created by Karina Chan and Laura Zeng");
+    JLabel l1 = new JLabel ("<html> <strong> <h1 style='color: white; margin-left: 25px; margin-right: 25px; margin-top: 25px; margin-bottom: 0px;'> WELCOME TO POKEMON: WELLESLEY CS EDITION </h1> </strong>"
+                              +"<h2 style='color: white; margin-left: 25px; margin-right: 25px; margin-top: 5px; '>Follow the tabs in order to play. GET YOUR CS DEGREE.</h2>");
     l1.setFont(new Font("Rockwell", Font.PLAIN, 16));
     
-    
     JLabel l2 = new JLabel ("------------------------");
-    JLabel l3 = new JLabel ("<html><h3 style='color: white; margin-left: 50px; margin-top: 5px; '> Follow the tabs in order to play. GET YOUR CS DEGREE.</h3></html>");
+    JLabel l3 = new JLabel ("<html><h3 style='color: white; margin-left: 25px; margin-right: 25px; margin-top: 5px; margin-bottom: 25px; '> Created by Karina Chan and Laura Zeng</h3></html>");
     l3.setFont(new Font("Rockwell", Font.PLAIN, 16));
     
     //adds labels and a picture
     add (l1, BorderLayout.PAGE_START);
-    add(l3, BorderLayout.PAGE_END);
+    add (l3, BorderLayout.PAGE_END);
     //add(new JSeparator (JSeparator.VERTICAL));
     
   }
