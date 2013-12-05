@@ -6,6 +6,8 @@
  * 
  */
 
+//need to make static player Buggle that doesn't change when reset
+
 
 import java.awt.*;
 import java.awt.event.*; // ***
@@ -23,6 +25,7 @@ import javax.swing.border.*;
 public class BuggleWorld extends JApplet
   implements ActionListener {
   
+  //code that builds the grid
   public int rows = 9;    // Number of rows.
   public int cols = 9;    // Number of columns.
   public Vector buggles;    // The buggles in the world.
@@ -42,6 +45,8 @@ public class BuggleWorld extends JApplet
   // which the new buggle will live. 
   public boolean inReset = false; // [lyn, 9/2/07] Tracks whether or not we are in the middle of a reset. 
   private BuggleGrid grid;
+  
+  //code that builds the GUI components
   private JPanel instructionPanel; // **** was Panel
   private JPanel controlPanel;
   private JPanel setPositionPanel;
@@ -49,6 +54,8 @@ public class BuggleWorld extends JApplet
   private JPanel setColorPanel;
   private JPanel setDelayPanel; // [9/6/04]
   //private JLabel output;
+  
+  //code that deals with buggles
   public BuggleExecuter exec;
   private Buggle selectedBuggle, prof;  // Currently selected buggle.
   // Menu items apply to this buggle. 
@@ -59,28 +66,26 @@ public class BuggleWorld extends JApplet
   private Direction selectedHeading = Direction.EAST; 
   private Color selectedColor = Color.red; 
   //private Choice colorChoices;
-  private JComboBox colorChoices; // ****
-  //private Choice headingChoices;
-  private JComboBox headingChoices; // ****
-  //private Choice xChoices;
-  //private Choice yChoices;
-  private JComboBox xChoices; // ****
-  private JComboBox yChoices; // ****
-  private JComboBox delayChoices; // [9/6/04]
   private int buggleDelay = 0; // [9/6/04] Amount of time buggle waits between moves.
-  // [9/6/04] Can be used to slow down buggle. 
-  private boolean debugOn = false;
+  
+  
   private JTextArea scrollText; 
   private JScrollPane scrollBox;
   //private PokemonBattle set; //new battle every round... ? I DONT KNOW IF THIS SHOULD BE CHANGED LATER; also have Prof as a instnace var with selected bug
   private LinkedQueue <String> h; //holds the battle values- every press A is another attack (hopefully) 
   //^KARINA EDITED THIS DOCUMENT HERE 12/4/13
-  private boolean battled=false; //WHERE SHOULD I PUT THIS? 
+  //private boolean battled=false; //WHERE SHOULD I PUT THIS? 
   
-  public void debugPrintln(String s) {
-    if (debugOn) 
-      System.out.println("Debug: " + s);
-  }
+  
+  
+  
+  
+  //battle components
+  //private PokemonBattle battle = new PokemonBattle(selectedBuggle().getBPokemon(), prof.getBPokemon()); 
+  private LinkedQueue<String> battleQ; 
+  private boolean battled=false; 
+  private int battleCounter=0; 
+  //private int battleQLength=battleQ.size(); 
   
   //----------------------------------------------------------------------
   /*** [lyn, 8/22/07] New code for running an applet as an application ***/
@@ -96,7 +101,7 @@ public class BuggleWorld extends JApplet
       public void run() { // this is Java's thread run() method, not BuggleWorlds!
         JFrame.setDefaultLookAndFeelDecorated(true); // enable window decorations. 
         JFrame frame = new JFrame(name); // create and set up the window.
-        frame.setSize(700, 450); // Default frame size (should make these settable variables!)
+        frame.setSize(800, 600); // Default frame size (should make these settable variables!)
         //dont't reset the size
         frame.setResizable(false); 
         // [lyn. 8/30/07] Using EXIT_ON_CLOSE empirically exits all instances of an application.
@@ -148,17 +153,14 @@ public class BuggleWorld extends JApplet
   
   // [lyn, 9/1/07] Long-awaited restructuring of init() and reset()!
   public void init() {
-    debugPrintln("Start init();");
     currentWorld = this; // Make this world the current "active" world.
     // Used as the default world in which new Buggles will live.
-    debugPrintln("setup();");
     setup(); // One-time initializations from BuggleWorld subclasses, 
     // such as setDimensions and creation of ParameterFrames.
     // Any such initializations cannot depend on the state of BuggleWorld
     // or its grid, since these haven't been created yet. 
     createGUI(); // Create the BuggleWorld GUI. This allocates space for the grid,
     // but does not draw it yet. 
-    debugPrintln("Making executer");
     exec = new BuggleExecuter(this); // BuggleExecuter for the RUN thread. 
     inReset = true; // [lyn, 9/2/07] Track whether we're in reset, for cellChanged();
     //   This *cannot* be done in reset() itself, since that's overridable.
@@ -185,7 +187,6 @@ public class BuggleWorld extends JApplet
   // Sets the rows and cols of this BuggleWorld, but does not cause anything to be drawn
   // or redrawn. The drawing is done by the reset() method. 
   public void setDimensions (int cols, int rows) {
-    debugPrintln("Start setDimensions(" + cols + ", " + rows + ")");
     this.cols = cols;
     this.rows = rows;
   }
@@ -199,20 +200,18 @@ public class BuggleWorld extends JApplet
   // with BuggleWorld (cells, walls, bagels, buggles, etc.) and displaying the state 
   // in the grid. 
   public void reset() {
-    debugPrintln("reset()");
     initializeWalls();
     marks = new Color [cols+1] [rows+1]; // Entries will be null unless set otherwise.
     initializeBagels();
     initializeStrings(); //[9/6/04]
     buggles = new Vector();
     //creates boundaries and professor buggle
-    createWorld(this.getGraphics(),9,9); 
+    createStadium(this.getGraphics(),9,9); 
     Location start = new Location (5,1); 
     selectedBuggle = new Buggle();
     selectedBuggle.setPosition(start); 
     //placeBagels(1, 9, 9);
     exec.reset();
-    debugPrintln("Finish BuggleWorld.reset()");
   } 
   
   // Creates the BuggleWorld GUI
@@ -224,13 +223,13 @@ public class BuggleWorld extends JApplet
     
     Container c = getContentPane(); //****
     
-    debugPrintln("Setting world layout");
     c.setLayout( new BorderLayout() );
     setBackground( backgroundColor );
     //puts the overworld in the center
     c.add(grid, BorderLayout.CENTER); 
     //puts the controls on the right side of the GUI
     c.add(instructionPanel, BorderLayout.EAST); 
+    c.add(controlPanel, BorderLayout.PAGE_END); 
   }
   
   private void makeInstructionPanel() {
@@ -258,7 +257,7 @@ public class BuggleWorld extends JApplet
     //puts scrollText (which we change throughout the game) in a ScrollPane 
     //(allowing the player to see past interactions)
     scrollBox = new JScrollPane(scrollText, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, 
-                                            JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+                                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     //scrollBox.setBorder(new EmptyBorder(10, 10, 10, 10));  
     instructionPanel.add(scrollBox);
   }
@@ -348,7 +347,7 @@ public class BuggleWorld extends JApplet
   // *** old *** public boolean action(Event event, Object arg) {
   //  try {
   public void actionPerformed( ActionEvent event ) { 
- 
+    
     Object src = event.getSource(); //[9/6/04]
     String arg = event.getActionCommand(); // ***   
     // [lyn, 9/1/07] Setting currentWorld when menu item pressed
@@ -368,18 +367,7 @@ public class BuggleWorld extends JApplet
     currentWorld = this; 
     // [lyn, 9/2/07] Reset this variable, in case it's gotten out of sync: 
     inReset = false; 
-    debugPrintln("actionPerformed: command = " + arg + "; src = " + src);
-    if (arg.equals("Run")) {
-      debugPrintln("Calling paint from run");
-      // System.out.println("Run");
-      // initState();
-      // grid.paint(); // changed **** // [lyn, 9/1/07] don't think this is necessary.
-      exec.run();
-    } else if (arg.equals("Step")) {
-      exec.step();
-    } else if (arg.equals("Pause")) {
-      exec.pause();
-    } else if (arg.equals("Reset")) {
+    if (arg.equals("Reset")) {
       inReset = true; // [lyn, 9/2/07] Track whether we're in reset, for cellChanged();
       //   This *cannot* be done in reset() itself, since that's overridable.
       reset(); // [lyn, 9/1/07] this is now very simple
@@ -395,38 +383,76 @@ public class BuggleWorld extends JApplet
       
       //12/4/13
       
-    } else if (arg.equals("A")&& (battled==false)) { 
+    } else if (arg.equals("A")) { 
+      String s = scrollText.getText(); 
+      if (battled==false) { 
+        s+="\nhai, bby"; 
+        scrollText.setText(s); 
+        battled=true; 
+      } else { 
+        if (battleCounter<10) { 
+          System.out.println(battleCounter); 
+          battleCounter++; 
+        } else { 
+          System.out.println("Done!"); 
+          //reset
+          battled=false; 
+          battleCounter=0; 
+        }
+      }
+    
+      
+      
+      
+      
+      
+      
+      /*
+      
       //when the player is next to the professor, execute this code when 
       //the player presses aButton to talk to the professor
+      int battleCounter = 0; 
+      int qLength = 0; 
       if (selectedBuggle.getPosition().equals(new Location(5,7))) { 
         //stores previous text
-        String s = scrollText.getText(); 
-        //adds more text
-        scrollText.setText(s + "\nOh, hello! Welcome to my class."); 
-        scrollText.setText(s + "\n.\n.\n.");
-        scrollText.setText("\n.\n.\n.\n");
-        
-        //System.out.println(new PokemonBattle(selectedBuggle().getBPokemon(), prof.getBPokemon()));
-        PokemonBattle test= new PokemonBattle(selectedBuggle().getBPokemon(), prof.getBPokemon());
-        h= test.getAttackStat(); 
-        scrollText.setText("PROFESSOR CHALLENGES YOU TO THEIR CLASS. \nPRESS A TO BEGIN BATTLE:\n");
-        LinkedQueue <String> temp= new LinkedQueue<String>();
- 
-        while(h.size()>0){ //while there are still attacks in the queue 
-          battled=true;
-          //if they press A
-            String element= h.dequeue();
-            scrollText.setText(s+ element+"\n");
-            temp.enqueue(element);
+        if (battled==false) { 
+          String s = scrollText.getText(); 
+          //adds more text
+          scrollText.setText(s + "\nOh, hello! Welcome to my class."); 
+          scrollText.setText(s + "\n.\n.\n.");
+          scrollText.setText("\n.\n.\n.\n");
+          //System.out.println(new PokemonBattle(selectedBuggle().getBPokemon(), prof.getBPokemon()));
+          PokemonBattle battle = new PokemonBattle(selectedBuggle().getBPokemon(), prof.getBPokemon());
+          h = battle.getAttackStat(); 
+          scrollText.setText("PROFESSOR CHALLENGES YOU TO THEIR CLASS. \nPRESS A TO BEGIN BATTLE:\n");
+          //LinkedQueue <String> temp= new LinkedQueue<String>();
+          qLength=h.size();
+          battled=true; 
+        } else {
+          String s = scrollText.getText(); 
+          scrollText.setText("THE BATTLE COMMENCES"); 
+          System.out.println(qLength); 
+          if(battleCounter<qLength) { 
+            System.out.println("how long is this?"); 
+            System.out.println(h.dequeue()); 
+            scrollText.setText(s); 
+          } else { 
+            System.out.println(qLength); 
+            System.out.println("not endless!"); 
+            battleCounter=0; 
           }
-      
-        
-       /*   
-        if (arg.equals("A")){
-          scrollText.setText(test.toString());
+           
         }
-          */
-        
+        /*
+         while(h.size()>0){ //while there are still attacks in the queue 
+         battled=true;
+         //if they press A
+         String element= h.dequeue();
+         scrollText.setText(s+ element+"\n");
+         temp.enqueue(element);
+         }
+         
+         
         
       } else if (selectedBuggle.getPosition().equals(new Location(5,8))){
         String s = scrollText.getText(); 
@@ -435,29 +461,27 @@ public class BuggleWorld extends JApplet
         String s = scrollText.getText(); 
         scrollText.setText(s + "\nPlease come closer!"); 
       }
+      
+      */
+      
     } else if (arg.equals("new Buggle()")) {
-      clearOutput();
       Buggle b = new Buggle(); // Note: new will automatically make b the selected buggle.
     } else if (arg.equals("RIGHT")) {
-      clearOutput();
       try { 
         selectedBuggle().right();
       } catch (MoveException me) { 
       }
     } else if (arg.equals("LEFT")) {
-      clearOutput();
       try { 
         selectedBuggle().left();
       } catch (MoveException me) { 
       }
     } else if (arg.equals("UP")) {
-      clearOutput();
       try { 
         selectedBuggle().up();
       } catch (MoveException me) { 
       }
     } else if (arg.equals("DOWN")) {
-      clearOutput();
       try { 
         selectedBuggle().down();
       } catch (MoveException me) { 
@@ -482,40 +506,18 @@ public class BuggleWorld extends JApplet
   }
   
   public void printError (String s) {
-    // Print error message in output area.
-    // System.out.println("printError: " + s);
     String message = "Buggle Error: " + s;
     System.out.println(message);
-    // Output is broken for now.
-    // output.setForeground(Color.red);
-    // output.setText(message);
   }
   
   public void printValue (String s) {
-    // Print value in output area.
-    // System.out.println("printValue: " + s);
     String message = "Value: " + s;
     System.out.println(message);
-    // Output is broken for now.
-    // output.setForeground(Color.blue);
-    // output.setText(message);
   }
   
   public void printInstruction (String s) {
-    // Print instruction in output area.
-    // System.out.println("printInstruction: " + s);
     System.out.println(s);
-    // Output is broken for now.
-    // output.setForeground(Color.black);
-    // output.setText(s);
   }
-  
-  
-  public void clearOutput() {
-    //System.out.println("clearOutput: ");
-    //output.setText("");
-  }
-  
   
   public Buggle selectedBuggle () {
     // Return the currentBuggle, or yell if it's null.
@@ -545,33 +547,26 @@ public class BuggleWorld extends JApplet
   }
   
   private void initializeStrings() {//[9/6/04]
-    debugPrintln("intializeStrings(); cols = " + cols + "; rows = " + rows);
     strings = new String [cols] [rows];
   }
   
   protected void initializeWalls () {
-    debugPrintln("Start initializeWalls");
     // [lyn, 11/11/06] Fixed the wall dimensions.
     // Also, since array slots are filled with false by default,
     // there's no need to explicitly initialize them. 
-    debugPrintln("horizontalWalls = new boolean[" + cols + "],[" + (rows+1) + "]");
-    debugPrintln("verticalWalls = new boolean[" + (cols+1) + "],[" + rows + "]");
     horizontalWalls = new boolean [cols] [rows+1];
     verticalWalls = new boolean [cols+1] [rows];
     
     // [lyn, 11/11/06] Fixed the wall initialization, which had fencepost errors before
     // Add boundaries at walls if specified. 
-    debugPrintln("Initializing horizontalWalls");
     for (int x = 0; x < cols; x++) {
       horizontalWalls[x][0] = boundariesAreWalls;
       horizontalWalls[x][rows] = boundariesAreWalls;
     }
-    debugPrintln("Initializing verticalWalls");
     for (int y = 0; y < rows; y++) {
       verticalWalls[0][y] = boundariesAreWalls;
       verticalWalls[cols][y] = boundariesAreWalls;
     }
-    debugPrintln("Finish initializeWalls");
   }
   
   // [lyn, 11/11/06] Fixed fencepost error in this method
@@ -596,27 +591,13 @@ public class BuggleWorld extends JApplet
     }
   }
   
-  // public void start () {
-  //   // System.out.println("start()");
-  //  //debugPrintln("Calling BuggleGraid.paint() from start()");
-  //  //**** grid.paint(); // **** this caused problems - too soon? 
-  // }
-  
   public void start () {
-    // System.out.println("start()");
-    debugPrintln("Calling BuggleGraid.paint() from start()");
     grid.paint();  
   }
   
   public void paint( Graphics g ) {
-    //debugPrintln("BuggleWorld asked by system to paint(g).");
     super.paint( g );
   }
-  
-  // public void paintComponent( Graphics g ) { // need to extend JPanel for this?
-  //  //debugPrintln("BuggleWorld asked by system to paint(g).");
-  //  super.paintComponent( g );
-  // }
   
   public void run () {
     // This is a hook that subclasses can override without having to worry 
@@ -638,9 +619,6 @@ public class BuggleWorld extends JApplet
     if (newy <= 0) 
       newy = newy + rows;
     Location p = new Location(newx, newy);
-    /* System.out.println("Add coords: p1 = " + p1 
-     + "; p2 = " + p2 
-     + "; result = " + p); */
     return p;
   }
   
@@ -670,51 +648,26 @@ public class BuggleWorld extends JApplet
   }
   
   
-  public void addString(Location p, String s) { //[9/6/04]
-    strings[p.x - 1][p.y - 1] = s;
-    cellChanged(p);
-  }
-  
-  public boolean isStringAt(Location p) { // [9/6/04]
-    return (strings[p.x - 1][p.y - 1]) != null;
-  }
-  
-  public String getStringAt(Location p) { // [9/6/04]
-    String s = strings[p.x - 1][p.y - 1];
-    String result;
-    if (s == null) {
-      result = "";
-    } else {
-      result= s;
-    }
-    // System.out.println("getStringAt(" + p + ") = " + result);
-    return result;
-  } 
-  
   public void add (Buggle b) {
     // System.out.println("Buggles=" + buggles );
     buggles.addElement(b);
-    debugPrintln("Calling BuggleGrid.draw() from BuggleWorld.add(Buggle)");
     grid.draw(b);
   }
   
   //draws a professor sprite that's boxed in by walls (therefore, the 
   //player can't move on top of the professor)
-  public void createWorld(Graphics g, int width, int height) { 
-    //Randomizer rand = new Randomizer();
-    //int x = rand.intBetween(2, width);
-    //int y = rand.intBetween(2, height);
-    
+  public void createStadium(Graphics g, int width, int height) { 
+
+    //initial position for the professor
     int x = 5; 
     int y = 8; 
     
     //cages in the professor
+    //sets up the stadium
     verticalWalls[x][y-1] = true;
     verticalWalls[x-1][y-1] = true; 
     horizontalWalls[x-1][y] = true; 
     //horizontalWalls[x-1][y-1] = true; 
-    
-    //sets up the stadium
     for (int i=0; i<4; i++) { 
       verticalWalls[x-1-i][y-2-i] = true; 
       verticalWalls[x+i][y-2-i] = true; 
@@ -735,7 +688,7 @@ public class BuggleWorld extends JApplet
     if (bagels > 0) {
       //int x = rand.intBetween(1, width);
       //int y = rand.intBetween(2, height);
-        placeBagels(bagels, width, height);
+      placeBagels(bagels, width, height);
     }
   }
   
@@ -761,28 +714,22 @@ public class BuggleWorld extends JApplet
     //   between time when Reset button is pressed and time when grid is redrawn
     //   for the new state. 
     if (! inReset) {
-      debugPrintln("Calling drawCell from cellChanged " + p);
       grid.drawCell(p);
     }
   }
   
   void buggleChanged(Buggle b) {
-    debugPrintln("Calling drawCell from buggleChanged ");
     grid.drawCell(b.position());
   }
   
   public void buggleMoved(Buggle b, Location oldpos, Location newpos) {
     // We have been informed that B has moved from oldpos to newpos.
     // For multiple buggles, should move buggle to top!
-    debugPrintln("Calling drawCell (1) from buggleMoved");
     grid.drawCell(oldpos);
-    debugPrintln("Calling drawCell (2) from buggleMoved");
     grid.drawCell(newpos);
   }
-    
+  
   public void draw (Buggle b) {
-    debugPrintln("Draw buggle " + b);
-    debugPrintln("Position = " + nullify(b.position()));
     grid.draw(b);
     //repaint(); //****
   }
@@ -793,7 +740,7 @@ public class BuggleWorld extends JApplet
     else
       return obj.toString();
   }
-    
+  
   // [lyn,11/11/06] Modified to handle null case correctly
   public Color markColorAt(Location p) {
     Color c = marks[p.x][p.y];
@@ -802,14 +749,6 @@ public class BuggleWorld extends JApplet
     } else {
       return c;
     }
-  }
-    
-  protected int getBuggleDelay () { //[9/6/04]
-    return buggleDelay;
-  }
-  
-  private void setBuggleDelay (int i) { //[9/6/04]
-    buggleDelay = i; 
   }
   
 }
@@ -880,8 +819,6 @@ class BuggleGrid extends Canvas //{
   }
   
   public void paintGrid() {
-    world.debugPrintln("BuggleGrid.paintGrid()");
-    
     makeGrid();
     gfx = this.getGraphics();
     
@@ -893,8 +830,8 @@ class BuggleGrid extends Canvas //{
     gfx.setColor(gridLineColor);
     gfx.fillRect(0, 0, canvasSize.width, canvasSize.height);
     
-   
-
+    
+    
     
     // [lyn, 11/11/06] Now display the grid itself.
     gfx.setColor(floorColor);
@@ -914,9 +851,7 @@ class BuggleGrid extends Canvas //{
       for (int i=0; i<10; i++) { 
         //drawInCell(bg, new Location(i,9)); 
       }
-      System.out.println("yay"); 
     } catch (Exception e) { 
-      System.out.println("nooooo"); 
     }
     
     
@@ -939,13 +874,11 @@ class BuggleGrid extends Canvas //{
      */ 
     
     // Paint trails & bagels & strings
-    world.debugPrintln("in paintGrid: painting trails and bagels");
     // [lyn, 11/11/06] fixed bug -- cols and rows were swapped here!
     // This was the cause of the bug that forced all grids to be square.
     for (int i=1; i<=world.cols; i++) {
       for (int j=1; j<=world.rows; j++) {
         Location p = new Location(i,j);
-        world.debugPrintln("in paintGrid: testing mark at (" + i + ", " + j + ")");
         
         // Fill the background color of the cell.
         // It's either the floor color or the trail color. 
@@ -956,23 +889,15 @@ class BuggleGrid extends Canvas //{
         // Draw any bagels
         if (world.isBagelAt(p)) 
           drawBagel(p, c);
-        
-        // Draw any strings
-        if (world.isStringAt(p)) {
-          drawString(p, c);
-        }
-        
       }
     } 
     
     // Paint walls
-    world.debugPrintln("in paintGrid: painting walls");
     
     // [lyn, 11/11/06] Split into horizontal and vertical walls to avoid fencepost errors
     // Paint horizontal walls:
     for (int x = 0; x < world.cols; x++) {
       for (int y = 0; y <= world.rows; y++) {
-        world.debugPrintln("in paintGrid: testing horizontal wall at (" + x + ", " + y + ")");
         if(world.horizontalWalls[x][y]) {
           drawHorizontalWall(x,y);
         } 
@@ -981,7 +906,6 @@ class BuggleGrid extends Canvas //{
     // Paint vertical walls:   
     for (int x = 0; x <= world.cols; x++) {
       for (int y = 0; y < world.rows; y++) {
-        world.debugPrintln("in paintGrid: testing vertical wall at (" + x + ", " + y + ")");
         if(world.verticalWalls[x][y]) {
           drawVerticalWall(x,y);
         } 
@@ -1009,19 +933,19 @@ class BuggleGrid extends Canvas //{
     
     // Compute triangle based on direction; there must be a cleverer way to do this!
     /*Point p1 = new Point(0,0);
-    double insetFactor = 0.5;
-    int insetX = (int) Math.floor(insetFactor * r.width); // unlike with bagels, no grid line to consider
-    int insetY = (int) Math.floor(insetFactor * r.height); // unlike with bagels, no grid line to consider
-    int width = r.width - 1; // [lyn, 11/11/06] Decrement so additions make sense in discrete grid
-    int height = r.height - 1;
-    p1.x = r.x + insetX;
-    p1.y = r.y + insetY;
-    */
+     double insetFactor = 0.5;
+     int insetX = (int) Math.floor(insetFactor * r.width); // unlike with bagels, no grid line to consider
+     int insetY = (int) Math.floor(insetFactor * r.height); // unlike with bagels, no grid line to consider
+     int width = r.width - 1; // [lyn, 11/11/06] Decrement so additions make sense in discrete grid
+     int height = r.height - 1;
+     p1.x = r.x + insetX;
+     p1.y = r.y + insetY;
+     */
     g.setPaintMode();
     try { 
       System.out.println("painting"); 
-        Image sprite = img; 
-        g.drawImage(sprite, x, y, this); 
+      Image sprite = img; 
+      g.drawImage(sprite, x, y, this); 
     } catch (Exception e) { 
     }
   }
@@ -1069,14 +993,12 @@ class BuggleGrid extends Canvas //{
   
   
   public void paint() {
-    world.debugPrintln("BuggleGrid paint();");
     this.paint( gfx ); //this.getGraphics()
   }
   
   public void paint( Graphics g ) {
     
     // super.paint(g); //****?? paintComponent??
-    world.debugPrintln("BuggleGrid paint(Graphics g);");
     paintGrid();
     // System.out.println("Start Paint");
     // resize();
@@ -1088,7 +1010,6 @@ class BuggleGrid extends Canvas //{
       //System.out.println("Begin printing all buggles2.");
       Buggle b = (Buggle) bugs.nextElement();
       //System.out.println("Begin printing all buggles3.");
-      world.debugPrintln("Calling drawBuggle from BuggleGrid.paint(Graphics g)");
       this.draw(b);
     }
     //System.out.println("End printing all buggles.");
@@ -1098,7 +1019,6 @@ class BuggleGrid extends Canvas //{
   public void draw( Buggle b ) {
     //System.out.println("Draw buggle " + b);
     //System.out.println("Position = " + nullify(b.position()));
-    world.debugPrintln("Calling drawCell from draw(Buggle)");
     
     drawCell(b.position());
   }
@@ -1111,7 +1031,6 @@ class BuggleGrid extends Canvas //{
   }
   
   public void drawCell (Location p) {
-    world.debugPrintln("Draw cell " + p);
     if (gfx != null) { // [lyn, 9/2/07] Ignore drawCell() request if called when gfx is null
       //   (say, by an addBagel() in reset(), before grid.paint() is called. 
       Color c = world.markColorAt(p);
@@ -1166,7 +1085,6 @@ class BuggleGrid extends Canvas //{
   public void drawMark (Color c, Location p) {
     // Really want stipple pattern here -- how to get it?
     // Graphics gfx = this.getGraphics();
-    world.debugPrintln("drawMark(" + c + ", " + p + ")");
     Rectangle r = cellRectangle(p);
     gfx.setColor(c);
     gfx.setPaintMode();
@@ -1174,7 +1092,6 @@ class BuggleGrid extends Canvas //{
   }
   
   public void drawBagel(Location p, Color background) {
-    world.debugPrintln("drawBagel(" + p + ", " + background + ")");
     double insetFactor = 0.05; 
     double holeFactor = 0.35;
     // [lyn, 11/11/06] Changed the following so that they are not constants but proportional.
@@ -1211,17 +1128,6 @@ class BuggleGrid extends Canvas //{
     gfx.setColor(Color.black);
     gfx.drawOval(bagelX, bagelY, bagelWidth-1, bagelHeight-1);
     gfx.drawOval(holeX , holeY, holeWidth-1, holeHeight-1);      
-  }
-  
-  public void drawString(Location p, Color background) {
-    world.debugPrintln("drawString(" + p + ", " + background + ")");
-    int inset = 3;
-    String s = world.getStringAt(p);
-    Location origin = cellOrigin(p);
-    int stringX = origin.x + inset;
-    int stringY = origin.y + cellHeight - inset; 
-    gfx.setColor(Color.black);
-    gfx.drawString(s, stringX, stringY);
   }
   
   public void drawBugglesAt (Location p) {
@@ -1425,7 +1331,6 @@ class BuggleExecuter {
   }
   
   public void run() {
-    world.debugPrintln("run()");
     // Run buggles until done or sent an explicit stop message.
     stepMode = false;
     execDebugPrintln("run: set stepMode to false");
@@ -1509,13 +1414,6 @@ class BuggleExecuter {
     // If in step mode, wait until next step is indicated. 
     // First instruction needs to be treated specially. 
     execDebugPrintln("waitIfNecessary: " + instruction);
-    int delay = world.getBuggleDelay();
-    if (delay > 0) {
-      try {
-        Thread.sleep(delay);
-      } catch (InterruptedException e) {
-      }
-    }
     if (state != RUNNING) { // [9/6/04]
       // Don't do anything special -- buggle routines were called during initialization.
       execDebugPrintln("waitIfNecessary: called when not running");
@@ -1624,9 +1522,9 @@ class Buggle {
   
   //KARINA EDITS 12/4/13
   private Pokemon you; 
-    
-    
-    
+  
+  
+  
   private Direction heading;
   private Color color;       // Color of the Buggle.
   private boolean trailmode = true;
@@ -1641,8 +1539,8 @@ class Buggle {
   public Buggle() {
     this(_defaultColor, _defaultX, _defaultY, BuggleWorld.currentWorld);
     //KARINA EDIT 12/4/13
-    you= new Pokemon("Type", "Nickname", "Yourname");
-   
+    you = new Pokemon("Type", "Nickname", "Yourname");
+    
   }
   
   public Buggle (BuggleWorld w) {
@@ -1848,18 +1746,6 @@ class Buggle {
     // cellChanged(position);
   }
   
-  public String dropString (String s) {
-    exec.waitIfNecessary("dropString()");
-    world.addString(position, s);
-    return s; 
-  }
-  
-  public int dropInt (int n) {
-    exec.waitIfNecessary("dropInt()");
-    world.addString(position, Integer.toString(n));
-    return n;
-  }
-    
   public Color getColor () {
     exec.waitIfNecessary("getColor()");
     return color;
