@@ -14,6 +14,7 @@ public class PokemonBattle {
  private ProfessorTree <Pokemon> fam; 
  private int orighp;
  private Iterator<Pokemon> it; 
+ private String s; 
  
   public PokemonBattle (Pokemon self, Pokemon opp) {
     p1=self;
@@ -21,35 +22,87 @@ public class PokemonBattle {
     orighp=p1.getHP();
     p2=opp;
     result = false;
-    visited= new ArrayStack(); //no one in this stack yet. 
+    visited= new ArrayStack(); //no one in this stack yet.
+    s="";
   }
 
+  
+//  public Pokemon playPokemonBattle(Pokemon p1, Pokemon p2) { //assuming p1 is YOU.
+//    Pokemon winner; 
+//    do {
+//      if (p1.getSPD()>=p2.getSPD()){
+//        p1.attack(p2);
+//        /*System.out.println(p1.getNickName()+ " had ATTACK OF "+p1.getATK()+"!");
+//        System.out.println(p2.getNickName()+ " now has HP OF "+p2.getHP()+"!");
+//        */
+//        if (p1.getHP()<=loss || p2.getHP()<=loss) break; //so that if one becomes negative from the first attack, leave the if statement and check
+//        //to exit
+//        p2.attack(p1); 
+//        /*System.out.println(p2.getNickName()+ " had ATTACK OF "+p2.getATK()+"!");
+//        System.out.println(p1.getNickName()+ " now has HP OF "+p1.getHP()+"!");
+//        */
+//      }
+//      else {
+//        p2.attack(p1);
+//       /*System.out.println(p2.getNickName()+ " had ATTACK OF "+p2.getATK()+"!");
+//        System.out.println(p1.getNickName()+ " now has HP OF "+p1.getHP()+"!");
+//        */
+//        if (p1.getHP()<=loss || p2.getHP()<=loss) break; //check again and leave if it is
+//        p1.attack(p2);
+//        /*
+//        System.out.println(p1.getNickName()+ " had ATTACK OF "+p1.getATK()+"!");
+//        System.out.println(p2.getNickName()+ " now has HP OF "+p2.getHP()+"!");
+//        */
+//      }
+//    } while (p1.getHP()>loss && p2.getHP()>loss);
+//    
+//    if (p1.getHP()<=loss){ //if the health is less than or equal to 0
+//      //System.out.println("MIME WINS");
+//      winner= p2; 
+//      result=false;} 
+//    
+//    else {  //if greater than 0, you win! 
+//      winner= p1; //put the win battle here 
+//      result=true;
+//    }
+//    
+//    resultBattle();
+//    return winner;
+//      
+//  }
+//  
+  
+  public String getS(){
+    return s;
+  }
+  
+  
   public Pokemon playPokemonBattle(Pokemon p1, Pokemon p2) { //assuming p1 is YOU.
-    Pokemon winner; 
+    Pokemon winner;  
     do {
       if (p1.getSPD()>=p2.getSPD()){
         p1.attack(p2);
-        /*System.out.println(p1.getNickName()+ " had ATTACK OF "+p1.getATK()+"!");
-        System.out.println(p2.getNickName()+ " now has HP OF "+p2.getHP()+"!");
-        */
+        s+=p1.getNickName()+ " had ATTACK OF "+p1.getATK()+"!\n";
+        s+=p2.getNickName()+ " now has HP OF "+p2.getHP()+"!\n";
+        
         if (p1.getHP()<=loss || p2.getHP()<=loss) break; //so that if one becomes negative from the first attack, leave the if statement and check
         //to exit
         p2.attack(p1); 
-        /*System.out.println(p2.getNickName()+ " had ATTACK OF "+p2.getATK()+"!");
-        System.out.println(p1.getNickName()+ " now has HP OF "+p1.getHP()+"!");
-        */
+        s+=p2.getNickName()+ " had ATTACK OF "+p2.getATK()+"!\n";
+        s+=p1.getNickName()+ " now has HP OF "+p1.getHP()+"!\n";
+        
       }
       else {
         p2.attack(p1);
-       /*System.out.println(p2.getNickName()+ " had ATTACK OF "+p2.getATK()+"!");
-        System.out.println(p1.getNickName()+ " now has HP OF "+p1.getHP()+"!");
-        */
+        s+=p2.getNickName()+ " had ATTACK OF "+p2.getATK()+"!\n";
+        s+=p1.getNickName()+ " now has HP OF "+p1.getHP()+"!\n";
+        
         if (p1.getHP()<=loss || p2.getHP()<=loss) break; //check again and leave if it is
         p1.attack(p2);
-        /*
-        System.out.println(p1.getNickName()+ " had ATTACK OF "+p1.getATK()+"!");
-        System.out.println(p2.getNickName()+ " now has HP OF "+p2.getHP()+"!");
-        */
+        
+        s+=p1.getNickName()+ " had ATTACK OF "+p1.getATK()+"!\n";
+        s+=p2.getNickName()+ " now has HP OF "+p2.getHP()+"!\n";
+        
       }
     } while (p1.getHP()>loss && p2.getHP()>loss);
     
@@ -67,7 +120,6 @@ public class PokemonBattle {
     return winner;
       
   }
-  
   
   private ArrayStack resultBattle(){ 
     Random rand = new Random();
@@ -89,7 +141,7 @@ public class PokemonBattle {
     
   
   
-  
+  /*
   public String toString() { 
    String s=p1.getTrainer()+"'s "+ p1.getNickName() + " is fighting against " + p2.getTrainer()+"'s "+ p2.getNickName() + ".\n"; 
    s+=playPokemonBattle(p1, p2).getNickName() + " wins!";
@@ -98,6 +150,16 @@ public class PokemonBattle {
 //    "Go! " + p1.getNickName() + "!"; 
    
    return s; 
+  }
+  */
+  
+  public String toString(){
+    String intro=p1.getTrainer()+"'s "+ p1.getNickName() + " is fighting against " + p2.getTrainer()+"'s "+ p2.getNickName() + ".\n"; 
+    playPokemonBattle(p1, p2);
+    intro+=s;
+    intro+= playPokemonBattle(p1, p2).getNickName() + " wins!";
+    
+    return intro;
   }
   
   
@@ -108,6 +170,7 @@ public class PokemonBattle {
    Pokemon rhys = new Pokemon ("Mr. Mime", "Mime", "Rhys"); 
    System.out.println(rhys);
    PokemonBattle fight = new PokemonBattle(lyn, rhys);
+   System.out.println("1."+ fight.getS());
    System.out.println("***\n"+fight); 
    System.out.println(lyn);
   }

@@ -71,6 +71,9 @@ public class BuggleWorld extends JApplet
   private JTextArea scrollText; 
   private JScrollPane scrollBox;
   //private PokemonBattle set; //new battle every round... ? I DONT KNOW IF THIS SHOULD BE CHANGED LATER; also have Prof as a instnace var with selected bug
+  private String h; //holds the battle values- every press A is another attack (hopefully) 
+  //^KARINA EDITED THIS DOCUMENT HERE 12/4/13
+  
   
   public void debugPrintln(String s) {
     if (debugOn) 
@@ -396,7 +399,14 @@ public class BuggleWorld extends JApplet
         String s = scrollText.getText(); 
         //adds more text
         scrollText.setText(s + "\nOh, hello! Welcome to my class."); 
-        System.out.println(new PokemonBattle(selectedBuggle().getBPokemon(), prof.getBPokemon()));
+        scrollText.setText(s + "\n.\n.\n.");
+        scrollText.setText("\n.\n.\n.");
+        
+        //System.out.println(new PokemonBattle(selectedBuggle().getBPokemon(), prof.getBPokemon()));
+        PokemonBattle test= new PokemonBattle(selectedBuggle().getBPokemon(), prof.getBPokemon());
+        h= test.toString(); 
+        scrollText.setText("Press A again"); 
+        
         
         
       } else if (selectedBuggle.getPosition().equals(new Location(5,8))){
