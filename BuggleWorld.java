@@ -42,6 +42,9 @@ public class BuggleWorld extends JApplet
   // which the new buggle will live. 
   public boolean inReset = false; // [lyn, 9/2/07] Tracks whether or not we are in the middle of a reset. 
   private BuggleGrid grid;
+  private JPanel gameControlPanel; 
+  private JPanel bagPanel;
+  private JLabel bagContents; 
   private JPanel instructionPanel; // **** was Panel
   private JPanel controlPanel;
   private JPanel setPositionPanel;
@@ -72,10 +75,17 @@ public class BuggleWorld extends JApplet
   private boolean debugOn = false;
   private JTextArea scrollText; 
   private JScrollPane scrollBox;
-  //private PokemonBattle set; //new battle every round... ? I DONT KNOW IF THIS SHOULD BE CHANGED LATER; also have Prof as a instnace var with selected bug
-  private LinkedQueue <String> h; //holds the battle values- every press A is another attack (hopefully) 
-  //^KARINA EDITED THIS DOCUMENT HERE 12/4/13
-  private boolean battled=false; //WHERE SHOULD I PUT THIS? 
+
+  
+  //Pokemon Battle
+  private Pokemon p1; 
+  private Pokemon p2; 
+  private PokemonBattle battle; 
+  private LinkedQueue<String> battleLog; 
+  private int battleCounter=0;
+  private int battleLength;
+  private boolean inBattle=false; 
+  
   
   public void debugPrintln(String s) {
     if (debugOn) 
@@ -96,7 +106,7 @@ public class BuggleWorld extends JApplet
       public void run() { // this is Java's thread run() method, not BuggleWorlds!
         JFrame.setDefaultLookAndFeelDecorated(true); // enable window decorations. 
         JFrame frame = new JFrame(name); // create and set up the window.
-        frame.setSize(700, 450); // Default frame size (should make these settable variables!)
+        frame.setSize(800, 500); // Default frame size (should make these settable variables!)
         //dont't reset the size
         frame.setResizable(false); 
         // [lyn. 8/30/07] Using EXIT_ON_CLOSE empirically exits all instances of an application.
@@ -206,11 +216,12 @@ public class BuggleWorld extends JApplet
     initializeStrings(); //[9/6/04]
     buggles = new Vector();
     //creates boundaries and professor buggle
-    createWorld(this.getGraphics(),9,9); 
+    createStadium(this.getGraphics(),9,9); 
     Location start = new Location (5,1); 
     selectedBuggle = new Buggle();
     selectedBuggle.setPosition(start); 
     //placeBagels(1, 9, 9);
+    initBattle(); 
     exec.reset();
     debugPrintln("Finish BuggleWorld.reset()");
   } 
@@ -221,7 +232,7 @@ public class BuggleWorld extends JApplet
     this.makeInstructionPanel(); // Make panel for instructions to the selected buggle
     this.makeControlPanel(); // Make panel for controlling execution of the buggle program
     // this.makeOutput();  // Make the area for displaying textual feedback
-    
+    this.makeGameControlPanel(); 
     Container c = getContentPane(); //****
     
     debugPrintln("Setting world layout");
@@ -230,7 +241,24 @@ public class BuggleWorld extends JApplet
     //puts the overworld in the center
     c.add(grid, BorderLayout.CENTER); 
     //puts the controls on the right side of the GUI
-    c.add(instructionPanel, BorderLayout.EAST); 
+    c.add(gameControlPanel, BorderLayout.EAST); 
+  }
+  
+  private void makeGameControlPanel() { 
+    gameControlPanel = new JPanel(); 
+    //gameControlPanel.setBackground(Color.white);
+    this.makeBagPanel(); 
+    gameControlPanel.setLayout(new BorderLayout()); 
+    gameControlPanel.add(bagPanel, BorderLayout.WEST); 
+    gameControlPanel.add(instructionPanel, BorderLayout.CENTER);
+    
+  }
+  
+  private void makeBagPanel() { 
+    bagPanel = new JPanel(); 
+    bagPanel.setBackground(Color.white);
+    bagContents = new JLabel("INVENTORY"); 
+    bagPanel.add(bagContents); 
   }
   
   private void makeInstructionPanel() {
@@ -238,13 +266,13 @@ public class BuggleWorld extends JApplet
     //Container cp = instructionPanel.getContentPane(); //****
     //cp.setLayout(new GridLayout(11,1));
     //to accomodate the JLabel scrollbox, 2 buttons, and gamepad
-    instructionPanel.setLayout(new GridLayout(4,4));
+    instructionPanel.setLayout(new GridLayout(3,3));
     instructionPanel.setBackground(Color.green);
     //creates the scrollbox where game text is displayed
-    newInstructionPanelScroll("Welcome to Pokemon CS Land"); 
-    JPanel bag = new JPanel(); 
+    newInstructionPanelScroll("Welcome to Pokemon CS Land\n"); 
+    /*JPanel bag = new JPanel(); 
     bag.add(new JLabel("This is where the bag could go.")); 
-    newInstructionPanelItem(bag); 
+    newInstructionPanelItem(bag); */
     //2 buttons
     newInstructionPanelItemPair("A", "B");  
     //gamePad
@@ -387,19 +415,36 @@ public class BuggleWorld extends JApplet
       // Note: grid.paint() is not a part of reset() itself, because reset() is overridable
       // by programmer, and don't want to draw grid until know all of the state changes. 
       grid.paint(); // draw the BuggleWorld grid after all state updates have been made. 
-    } else if (arg.equals("B")) { 
-      System.out.println("B"); 
-      String s = scrollText.getText(); 
-      scrollText.setText("YOU ARE:"+ selectedBuggle().getBPokemon());
-      //KARINA TRYING TO SHOW THE POKEMON INTEGRATION WITH THE BUGGLE 
-      
-      //12/4/13
-      
-    } else if (arg.equals("A")&& (battled==false)) { 
+    } else if (arg.equals("B")) {
+      //can't access B button in the middle of a battle
+      if (inBattle) { 
+        String s = scrollText.getText(); 
+        scrollText.setText(s + "You can't press B now! \nYou're in the middle of a battle!\n"); 
+        
+        //12/4/13
+      } else { 
+        scrollText.setText("YOU ARE:"+ selectedBuggle().getBPokemon() + "\n");
+      }
+    } else if (arg.equals("A")) { 
       //when the player is next to the professor, execute this code when 
       //the player presses aButton to talk to the professor
       if (selectedBuggle.getPosition().equals(new Location(5,7))) { 
-        //stores previous text
+        if (battleCounter<battleLength) { 
+          if (battleCounter==0) { 
+            inBattle=true; 
+            scrollText.setText(battleLog.dequeue());
+          } else { 
+            String s = scrollText.getText();
+            scrollText.setText(s + battleLog.dequeue()); 
+          }
+          battleCounter++; 
+        } else { 
+          inBattle=false; 
+          System.out.println("DONE!"); 
+        }
+        
+
+      /*  //stores previous text
         String s = scrollText.getText(); 
         //adds more text
         scrollText.setText(s + "\nOh, hello! Welcome to my class."); 
@@ -419,13 +464,9 @@ public class BuggleWorld extends JApplet
             scrollText.setText(s+ element+"\n");
             temp.enqueue(element);
           }
-      
-        
-       /*   
-        if (arg.equals("A")){
-          scrollText.setText(test.toString());
-        }
+          
           */
+      
         
         
       } else if (selectedBuggle.getPosition().equals(new Location(5,8))){
@@ -698,9 +739,21 @@ public class BuggleWorld extends JApplet
     grid.draw(b);
   }
   
+  
+  public void initBattle() { 
+    p1 = new Pokemon ("Buneary", "Angelica", "Lyn"); 
+    p2 = new Pokemon ("Mr. Mime", "Mime", "Rhys"); 
+    battle = new PokemonBattle(p1, p2); 
+    System.out.println("Battle between " + p1.getNickName() + " and " + p2.getNickName() + ", start! \n" 
+                         + battle.playPokemonBattle(p1, p2).getNickName() + " wins!"); 
+    battleLog = battle.getAttackStat(); 
+    battleLength = battleLog.size(); 
+    //System.out.println(battleLog.dequeue()); 
+  }
+  
   //draws a professor sprite that's boxed in by walls (therefore, the 
   //player can't move on top of the professor)
-  public void createWorld(Graphics g, int width, int height) { 
+  public void createStadium(Graphics g, int width, int height) { 
     //Randomizer rand = new Randomizer();
     //int x = rand.intBetween(2, width);
     //int y = rand.intBetween(2, height);
@@ -726,6 +779,9 @@ public class BuggleWorld extends JApplet
     prof= new Buggle();
     Location profLoc = new Location (x,y); 
     prof.setPosition(profLoc); 
+    
+    //set up the battle
+    
     
   }
   
@@ -914,9 +970,7 @@ class BuggleGrid extends Canvas //{
       for (int i=0; i<10; i++) { 
         //drawInCell(bg, new Location(i,9)); 
       }
-      System.out.println("yay"); 
     } catch (Exception e) { 
-      System.out.println("nooooo"); 
     }
     
     

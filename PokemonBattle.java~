@@ -14,7 +14,7 @@ public class PokemonBattle {
  private ProfessorTree <Pokemon> fam; 
  private int orighp;
  private Iterator<Pokemon> it; 
- private String s; 
+ private LinkedQueue<String> attackstats; 
  
   public PokemonBattle (Pokemon self, Pokemon opp) {
     p1=self;
@@ -23,7 +23,7 @@ public class PokemonBattle {
     p2=opp;
     result = false;
     visited= new ArrayStack(); //no one in this stack yet.
-    s="";
+    attackstats= new LinkedQueue <String> (); 
   }
 
   
@@ -72,9 +72,6 @@ public class PokemonBattle {
 //  }
 //  
   
-  public String getS(){
-    return s;
-  }
   
   
   public Pokemon playPokemonBattle(Pokemon p1, Pokemon p2) { //assuming p1 is YOU.
@@ -82,26 +79,26 @@ public class PokemonBattle {
     do {
       if (p1.getSPD()>=p2.getSPD()){
         p1.attack(p2);
-        s+=p1.getNickName()+ " had ATTACK OF "+p1.getATK()+"!\n";
-        s+=p2.getNickName()+ " now has HP OF "+p2.getHP()+"!\n";
+        attackstats.enqueue(p1.getNickName()+ " had ATTACK OF "+p1.getATK()+"!\n");
+        attackstats.enqueue(p2.getNickName()+ " now has HP OF "+p2.getHP()+"!\n");
         
         if (p1.getHP()<=loss || p2.getHP()<=loss) break; //so that if one becomes negative from the first attack, leave the if statement and check
         //to exit
         p2.attack(p1); 
-        s+=p2.getNickName()+ " had ATTACK OF "+p2.getATK()+"!\n";
-        s+=p1.getNickName()+ " now has HP OF "+p1.getHP()+"!\n";
+        attackstats.enqueue(p2.getNickName()+ " had ATTACK OF "+p2.getATK()+"!\n");
+        attackstats.enqueue(p1.getNickName()+ " now has HP OF "+p1.getHP()+"!\n");
         
       }
       else {
         p2.attack(p1);
-        s+=p2.getNickName()+ " had ATTACK OF "+p2.getATK()+"!\n";
-        s+=p1.getNickName()+ " now has HP OF "+p1.getHP()+"!\n";
+        attackstats.enqueue(p2.getNickName()+ " had ATTACK OF "+p2.getATK()+"!\n");
+        attackstats.enqueue(p1.getNickName()+ " now has HP OF "+p1.getHP()+"!\n");
         
         if (p1.getHP()<=loss || p2.getHP()<=loss) break; //check again and leave if it is
         p1.attack(p2);
         
-        s+=p1.getNickName()+ " had ATTACK OF "+p1.getATK()+"!\n";
-        s+=p2.getNickName()+ " now has HP OF "+p2.getHP()+"!\n";
+        attackstats.enqueue(p1.getNickName()+ " had ATTACK OF "+p1.getATK()+"!\n");
+        attackstats.enqueue(p2.getNickName()+ " now has HP OF "+p2.getHP()+"!\n");
         
       }
     } while (p1.getHP()>loss && p2.getHP()>loss);
@@ -152,11 +149,22 @@ public class PokemonBattle {
    return s; 
   }
   */
+  public LinkedQueue <String> getAttackStat(){
+    return attackstats;
+  }
   
   public String toString(){
     String intro=p1.getTrainer()+"'s "+ p1.getNickName() + " is fighting against " + p2.getTrainer()+"'s "+ p2.getNickName() + ".\n"; 
     playPokemonBattle(p1, p2);
-    intro+=s;
+    LinkedQueue<String> temp= new LinkedQueue<String>();
+    //System.out.println(attackstats);
+    /*while (attackstats.size()>0){
+      String element= attackstats.dequeue();
+      intro+= element + "\n";
+      temp.enqueue(element);
+    }
+    attackstats=temp;
+    */
     intro+= playPokemonBattle(p1, p2).getNickName() + " wins!";
     
     return intro;
@@ -170,7 +178,6 @@ public class PokemonBattle {
    Pokemon rhys = new Pokemon ("Mr. Mime", "Mime", "Rhys"); 
    System.out.println(rhys);
    PokemonBattle fight = new PokemonBattle(lyn, rhys);
-   System.out.println("1."+ fight.getS());
    System.out.println("***\n"+fight); 
    System.out.println(lyn);
   }

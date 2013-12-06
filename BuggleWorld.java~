@@ -14,6 +14,8 @@ import java.util.*;
 import javax.swing.*;  // ****
 import javax.imageio.*; 
 import java.io.*; 
+import java.util.*;
+import javafoundations.*;
 
 import javax.swing.border.*;
 
@@ -71,9 +73,9 @@ public class BuggleWorld extends JApplet
   private JTextArea scrollText; 
   private JScrollPane scrollBox;
   //private PokemonBattle set; //new battle every round... ? I DONT KNOW IF THIS SHOULD BE CHANGED LATER; also have Prof as a instnace var with selected bug
-  private String h; //holds the battle values- every press A is another attack (hopefully) 
+  private LinkedQueue <String> h; //holds the battle values- every press A is another attack (hopefully) 
   //^KARINA EDITED THIS DOCUMENT HERE 12/4/13
-  
+  private boolean battled=false; //WHERE SHOULD I PUT THIS? 
   
   public void debugPrintln(String s) {
     if (debugOn) 
@@ -244,9 +246,10 @@ public class BuggleWorld extends JApplet
     bag.add(new JLabel("This is where the bag could go.")); 
     newInstructionPanelItem(bag); 
     //2 buttons
-    newInstructionPanelItemPair("aButton()", "bButton()");  
+    newInstructionPanelItemPair("A", "B");  
     //gamePad
-    gamePad("up()","right()","down()","left()"); 
+    //gamePad("up()","right()","down()","left()"); 
+    gamePad("UP","RIGHT","DOWN","LEFT");
   }
   
   private void newInstructionPanelScroll (String s) {
@@ -344,7 +347,8 @@ public class BuggleWorld extends JApplet
   // 
   // *** old *** public boolean action(Event event, Object arg) {
   //  try {
-  public void actionPerformed( ActionEvent event ) {    
+  public void actionPerformed( ActionEvent event ) { 
+ 
     Object src = event.getSource(); //[9/6/04]
     String arg = event.getActionCommand(); // ***   
     // [lyn, 9/1/07] Setting currentWorld when menu item pressed
@@ -383,7 +387,7 @@ public class BuggleWorld extends JApplet
       // Note: grid.paint() is not a part of reset() itself, because reset() is overridable
       // by programmer, and don't want to draw grid until know all of the state changes. 
       grid.paint(); // draw the BuggleWorld grid after all state updates have been made. 
-    } else if (arg.equals("bButton()")) { 
+    } else if (arg.equals("B")) { 
       System.out.println("B"); 
       String s = scrollText.getText(); 
       scrollText.setText("YOU ARE:"+ selectedBuggle().getBPokemon());
@@ -391,7 +395,7 @@ public class BuggleWorld extends JApplet
       
       //12/4/13
       
-    } else if (arg.equals("aButton()")) { 
+    } else if (arg.equals("A")&& (battled==false)) { 
       //when the player is next to the professor, execute this code when 
       //the player presses aButton to talk to the professor
       if (selectedBuggle.getPosition().equals(new Location(5,7))) { 
@@ -400,13 +404,28 @@ public class BuggleWorld extends JApplet
         //adds more text
         scrollText.setText(s + "\nOh, hello! Welcome to my class."); 
         scrollText.setText(s + "\n.\n.\n.");
-        scrollText.setText("\n.\n.\n.");
+        scrollText.setText("\n.\n.\n.\n");
         
         //System.out.println(new PokemonBattle(selectedBuggle().getBPokemon(), prof.getBPokemon()));
         PokemonBattle test= new PokemonBattle(selectedBuggle().getBPokemon(), prof.getBPokemon());
-        h= test.toString(); 
-        scrollText.setText("Press A again"); 
+        h= test.getAttackStat(); 
+        scrollText.setText("PROFESSOR CHALLENGES YOU TO THEIR CLASS. \nPRESS A TO BEGIN BATTLE:\n");
+        LinkedQueue <String> temp= new LinkedQueue<String>();
+ 
+        while(h.size()>0){ //while there are still attacks in the queue 
+          battled=true;
+          //if they press A
+            String element= h.dequeue();
+            scrollText.setText(s+ element+"\n");
+            temp.enqueue(element);
+          }
+      
         
+       /*   
+        if (arg.equals("A")){
+          scrollText.setText(test.toString());
+        }
+          */
         
         
       } else if (selectedBuggle.getPosition().equals(new Location(5,8))){
@@ -419,25 +438,25 @@ public class BuggleWorld extends JApplet
     } else if (arg.equals("new Buggle()")) {
       clearOutput();
       Buggle b = new Buggle(); // Note: new will automatically make b the selected buggle.
-    } else if (arg.equals("right()")) {
+    } else if (arg.equals("RIGHT")) {
       clearOutput();
       try { 
         selectedBuggle().right();
       } catch (MoveException me) { 
       }
-    } else if (arg.equals("left()")) {
+    } else if (arg.equals("LEFT")) {
       clearOutput();
       try { 
         selectedBuggle().left();
       } catch (MoveException me) { 
       }
-    } else if (arg.equals("up()")) {
+    } else if (arg.equals("UP")) {
       clearOutput();
       try { 
         selectedBuggle().up();
       } catch (MoveException me) { 
       }
-    } else if (arg.equals("down()")) {
+    } else if (arg.equals("DOWN")) {
       clearOutput();
       try { 
         selectedBuggle().down();
@@ -1623,6 +1642,7 @@ class Buggle {
     this(_defaultColor, _defaultX, _defaultY, BuggleWorld.currentWorld);
     //KARINA EDIT 12/4/13
     you= new Pokemon("Type", "Nickname", "Yourname");
+   
   }
   
   public Buggle (BuggleWorld w) {
