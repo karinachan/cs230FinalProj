@@ -186,5 +186,5 @@ public class PokemonBattle {
   //if lose, then set the pokemon obj (if you lost) back a node on the tree of opponents
   //set back node in the land world also
   //increment the win for the pokemon 
-  //increment number of people you've visited f
+  //increment number of people you've visited 
   
