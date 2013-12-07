@@ -125,11 +125,13 @@ public class PokemonBattle {
       
       //adding some moving onto the next room using the classroom graph
       
-      p1.setHP(orighp+ rand.nextInt(50)+50); //hp increases at a random value between (50-100)
+      p1.setHP(orighp+rand.nextInt(50)+50); //hp increases at a random value between (50-100)
+      p1.setATK(rand.nextInt(50)+50); //atk increases at a random value
+      
     } 
     else {
       
-      p1.setHP(orighp);
+      p1.setHP(orighp/2); //the result of your battle if you lose is just half health. 
       //System.out.println("hi");
     } 
     return visited;

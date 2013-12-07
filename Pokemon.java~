@@ -92,9 +92,12 @@ public class Pokemon {
   }
   
   public void setHP(int backup){
-    this.hp = backup;
+    this.hp = backup; //since the original will change (if you get here, you might get the value of the damaged one + bonus) 
   }
   
+  public void setATK(int increase){
+    this.atk= this.getATK()+increase;
+  }
   
   //this is the attacking pokemon, and p is the pokemon being attacked
   //this produces a String that is used in attack() in PokemonBattle so 
@@ -111,7 +114,7 @@ public class Pokemon {
   
   
   public String toString() { 
-    String s="\n****"+ "\nPokemon: " + name + 
+    String s="\nPokemon: " + name + 
       "\nNickname: " + nickName +
       "\nTrainer: " + trainer + 
       "\nHP: " + hp + 

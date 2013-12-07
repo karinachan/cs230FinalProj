@@ -10,7 +10,7 @@ public class PokemonBattle {
   */  
  private boolean result; //win is true 
  //private LinkedQueue visited; //the visited professors 
- private ArrayStack visited; 
+
  private ProfessorTree <Pokemon> fam; 
  private int orighp;
  private Iterator<Pokemon> it; 
@@ -22,7 +22,7 @@ public class PokemonBattle {
     orighp=p1.getHP();
     p2=opp;
     result = false;
-    visited= new ArrayStack(); //no one in this stack yet.
+    
     attackstats= new LinkedQueue <String> (); 
   }
 
@@ -121,7 +121,7 @@ public class PokemonBattle {
   private ArrayStack resultBattle(){ 
     Random rand = new Random();
     if (result){ //if you win
-      visited.push(p2); //add your opponent
+      p1.getVisited().push(p2); //add your opponent
       
       //adding some moving onto the next room using the classroom graph
       
@@ -134,7 +134,7 @@ public class PokemonBattle {
       p1.setHP(orighp/2); //the result of your battle if you lose is just half health. 
       //System.out.println("hi");
     } 
-    return visited;
+    return p1.getVisited();
   }
   
     
@@ -182,6 +182,9 @@ public class PokemonBattle {
    PokemonBattle fight = new PokemonBattle(lyn, rhys);
    System.out.println("***\n"+fight); 
    System.out.println(lyn);
+   System.out.println(lyn.getVisited());
+   PokemonBattle fight2= new PokemonBattle(lyn, rhys);
+   System.out.println(lyn.getVisited());
   }
 }
 
