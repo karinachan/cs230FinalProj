@@ -79,8 +79,7 @@ public class BuggleWorld extends JApplet
   
   
   //Pokemon Battle
-  private Pokemon p1, p2, tempPoke; //temp stores the original values and p1 stores the other values 
- 
+  private Pokemon p1, p2, tempPoke; //temp stores the original values and p1 stores the other values
   private PokemonBattle battle; 
   private LinkedQueue<String> battleLog; 
   private int battleCounter=0;
@@ -221,7 +220,8 @@ public class BuggleWorld extends JApplet
     //creates boundaries and professor buggle
     createStadium(this.getGraphics(),9,9); 
     Location start = new Location (5,1); 
-    selectedBuggle = new Buggle("Pikachu", "Pika", "Karilaur");
+    selectedBuggle = new Buggle("Pikachu", "Pika", "Karilaur", 300, 75, 75); //default stats are average
+    //selectedBuggle = new Buggle("Pikachu", "Pika", "Karilaur");
     selectedBuggle.setPosition(start); 
     //placeBagels(1, 9, 9);
     initBattle(); 
@@ -246,6 +246,7 @@ public class BuggleWorld extends JApplet
     c.add(grid, BorderLayout.CENTER); 
     //puts the controls on the right side of the GUI
     c.add(gameControlPanel, BorderLayout.EAST); 
+    c.add(controlPanel, BorderLayout.PAGE_END); 
   }
   
   private void makeGameControlPanel() { 
@@ -453,7 +454,14 @@ public class BuggleWorld extends JApplet
         } else { 
           inBattle=false; 
           scrollText.setText(battle.getStatus()); 
-          if (!battle.hasWonYet()) reset();
+          if (!battle.hasWonYet()) { 
+            reset();
+          } else { 
+            System.out.println("freedom!"); 
+            //horizontalWalls[7][7]=true; 
+            horizontalWalls[7][4]=false; 
+            grid.paintGrid(); 
+          }
           //temp= p1;
         }
         
@@ -790,6 +798,8 @@ public class BuggleWorld extends JApplet
     int x = 5; 
     int y = 8; 
     
+    
+    
     //cages in the professor
     verticalWalls[x][y-1] = true;
     verticalWalls[x-1][y-1] = true; 
@@ -803,7 +813,6 @@ public class BuggleWorld extends JApplet
       horizontalWalls[x-2-i][y-2-i] = true; 
       horizontalWalls[x+i][y-2-i] = true; 
     }
-    
     //Buggle prof = new Buggle(); 
     prof= new Buggle("Buneary","Angelica","Lyn");
     Location profLoc = new Location (x,y); 
@@ -1725,7 +1734,13 @@ class Buggle {
     this(_defaultColor, _defaultX, _defaultY, BuggleWorld.currentWorld);
     //KARINA EDIT 12/4/13
     you= new Pokemon(pokeName, pokeNickName, yourName);
-    
+  }
+  
+  public Buggle(String pokeName, String pokeNickName, String yourName, 
+                int hp, int atk, int spd) {
+    this(_defaultColor, _defaultX, _defaultY, BuggleWorld.currentWorld);
+    //KARINA EDIT 12/4/13
+    you= new Pokemon(pokeName, pokeNickName, yourName, hp, atk, spd);
   }
   
   

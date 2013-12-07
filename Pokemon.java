@@ -10,8 +10,7 @@ public class Pokemon {
   private int spd; 
   private String trainer;
   private ProfessorTree <Pokemon> fam; 
-   private ArrayStack wonList; //here so that every battle, the pokemon keeps same stats (easier to save also)
-  
+  private ArrayStack wonList; //here so that every battle, the pokemon keeps same stats (easier to save also)
   
   public Pokemon (String name, String nickName, String trainer) { 
     Random rand = new Random();
@@ -23,6 +22,18 @@ public class Pokemon {
     this.atk=rand.nextInt(50)+50; //random between 50-100; ; 
     this.spd=rand.nextInt(50)+50; //random between 50-100; ;
     wonList= new ArrayStack(); //no one in this stack yet.
+  }
+
+  public Pokemon (String name, String nickName, String trainer, 
+                  int hp, int atk, int spd) { 
+    this.name=name; 
+    this.nickName=nickName; 
+    this.trainer=trainer; 
+    this.hp=hp;
+    this.atk=atk; 
+    this.spd=spd; 
+        wonList= new ArrayStack(); //no one in this stack yet.
+
   }
   
   public ArrayStack getWon(){

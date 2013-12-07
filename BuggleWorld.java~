@@ -86,6 +86,7 @@ public class BuggleWorld extends JApplet
   private int battleCounter=0;
   private int battleLength;
   private boolean inBattle=false; 
+  private String first;
   
   
   public void debugPrintln(String s) {
@@ -286,6 +287,8 @@ public class BuggleWorld extends JApplet
   private void newInstructionPanelScroll (String s) {
     scrollText = new JTextArea(s); 
     scrollText.setEditable(false); 
+    scrollText.setLineWrap(true);
+    scrollText.setWrapStyleWord(true);
     //puts scrollText (which we change throughout the game) in a ScrollPane 
     //(allowing the player to see past interactions)
     scrollBox = new JScrollPane(scrollText, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, 
@@ -437,10 +440,11 @@ public class BuggleWorld extends JApplet
       //when the player is next to the professor, execute this code when 
       //the player presses aButton to talk to the professor
       if (selectedBuggle.getPosition().equals(new Location(5,7))) { 
-        if (battleCounter<battleLength) { 
-          if (battleCounter==0) { 
+        if (battleCounter<=battleLength) {  //so it goes to one above
+          if (battleCounter==0) {  //so the battle status prints first hu hu hu
             inBattle=true; 
-            scrollText.setText(battleLog.dequeue());
+            scrollText.setText(first+"\n");  //have a new line
+            //scrollText.setText(battleLog.dequeue());
           } else { 
             String s = scrollText.getText();
             scrollText.setText(s + battleLog.dequeue()); 
@@ -448,7 +452,8 @@ public class BuggleWorld extends JApplet
           battleCounter++; 
         } else { 
           inBattle=false; 
-          System.out.println("DONE!"); 
+          scrollText.setText(battle.getStatus()); 
+          if (!battle.hasWonYet()) reset();
           //temp= p1;
         }
         
@@ -758,6 +763,7 @@ public class BuggleWorld extends JApplet
     System.out.println("TEMP: " +tempPoke); //orig stats
     p2= prof.getBPokemon();
     battle = new PokemonBattle(p1, p2); 
+    first= battle.getStatus(); //the FIRST STATEMENT 
     //System.out.println(p1);
     //System.out.println(p2);
     System.out.println("TEMP POST BATTLE: "+ tempPoke);
