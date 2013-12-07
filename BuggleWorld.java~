@@ -1,4 +1,5 @@
 //every method must be commented as such: 
+//changed
 
 /** 
  * @param
@@ -75,11 +76,11 @@ public class BuggleWorld extends JApplet
   private boolean debugOn = false;
   private JTextArea scrollText; 
   private JScrollPane scrollBox;
-
+  
   
   //Pokemon Battle
-  private Pokemon p1; 
-  private Pokemon p2; 
+  private Pokemon p1, p2, tempPoke; //temp stores the original values and p1 stores the other values 
+ 
   private PokemonBattle battle; 
   private LinkedQueue<String> battleLog; 
   private int battleCounter=0;
@@ -209,6 +210,7 @@ public class BuggleWorld extends JApplet
   // with BuggleWorld (cells, walls, bagels, buggles, etc.) and displaying the state 
   // in the grid. 
   public void reset() {
+    System.out.println("HELLO THERE");
     debugPrintln("reset()");
     initializeWalls();
     marks = new Color [cols+1] [rows+1]; // Entries will be null unless set otherwise.
@@ -218,7 +220,7 @@ public class BuggleWorld extends JApplet
     //creates boundaries and professor buggle
     createStadium(this.getGraphics(),9,9); 
     Location start = new Location (5,1); 
-    selectedBuggle = new Buggle();
+    selectedBuggle = new Buggle("Pikachu", "Pika", "Karilaur");
     selectedBuggle.setPosition(start); 
     //placeBagels(1, 9, 9);
     initBattle(); 
@@ -228,6 +230,7 @@ public class BuggleWorld extends JApplet
   
   // Creates the BuggleWorld GUI
   public void createGUI() {
+    //initBattle(); 
     grid = new BuggleGrid(this);  // Make grid in which buggles are displayed
     this.makeInstructionPanel(); // Make panel for instructions to the selected buggle
     this.makeControlPanel(); // Make panel for controlling execution of the buggle program
@@ -271,8 +274,8 @@ public class BuggleWorld extends JApplet
     //creates the scrollbox where game text is displayed
     newInstructionPanelScroll("Welcome to Pokemon CS Land\n"); 
     /*JPanel bag = new JPanel(); 
-    bag.add(new JLabel("This is where the bag could go.")); 
-    newInstructionPanelItem(bag); */
+     bag.add(new JLabel("This is where the bag could go.")); 
+     newInstructionPanelItem(bag); */
     //2 buttons
     newInstructionPanelItemPair("A", "B");  
     //gamePad
@@ -286,7 +289,7 @@ public class BuggleWorld extends JApplet
     //puts scrollText (which we change throughout the game) in a ScrollPane 
     //(allowing the player to see past interactions)
     scrollBox = new JScrollPane(scrollText, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, 
-                                            JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+                                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     //scrollBox.setBorder(new EmptyBorder(10, 10, 10, 10));  
     instructionPanel.add(scrollBox);
   }
@@ -376,7 +379,7 @@ public class BuggleWorld extends JApplet
   // *** old *** public boolean action(Event event, Object arg) {
   //  try {
   public void actionPerformed( ActionEvent event ) { 
- 
+    
     Object src = event.getSource(); //[9/6/04]
     String arg = event.getActionCommand(); // ***   
     // [lyn, 9/1/07] Setting currentWorld when menu item pressed
@@ -423,7 +426,12 @@ public class BuggleWorld extends JApplet
         
         //12/4/13
       } else { 
-        scrollText.setText("YOU ARE:"+ selectedBuggle().getBPokemon() + "\n");
+        //scrollText.setText("YOU ARE:"+ selectedBuggle().getBPokemon() + "\n");
+         System.out.println("TEMP POST BATTLE: "+ tempPoke);
+        System.out.println("p1:" + p1);
+        System.out.println("temp:"+tempPoke);
+        scrollText.setText("YOU ARE:"+ tempPoke + "\n");
+        
       }
     } else if (arg.equals("A")) { 
       //when the player is next to the professor, execute this code when 
@@ -441,32 +449,33 @@ public class BuggleWorld extends JApplet
         } else { 
           inBattle=false; 
           System.out.println("DONE!"); 
+          //temp= p1;
         }
         
-
-      /*  //stores previous text
-        String s = scrollText.getText(); 
-        //adds more text
-        scrollText.setText(s + "\nOh, hello! Welcome to my class."); 
-        scrollText.setText(s + "\n.\n.\n.");
-        scrollText.setText("\n.\n.\n.\n");
         
-        //System.out.println(new PokemonBattle(selectedBuggle().getBPokemon(), prof.getBPokemon()));
-        PokemonBattle test= new PokemonBattle(selectedBuggle().getBPokemon(), prof.getBPokemon());
-        h= test.getAttackStat(); 
-        scrollText.setText("PROFESSOR CHALLENGES YOU TO THEIR CLASS. \nPRESS A TO BEGIN BATTLE:\n");
-        LinkedQueue <String> temp= new LinkedQueue<String>();
- 
-        while(h.size()>0){ //while there are still attacks in the queue 
-          battled=true;
-          //if they press A
-            String element= h.dequeue();
-            scrollText.setText(s+ element+"\n");
-            temp.enqueue(element);
-          }
-          
-          */
-      
+        /*  //stores previous text
+         String s = scrollText.getText(); 
+         //adds more text
+         scrollText.setText(s + "\nOh, hello! Welcome to my class."); 
+         scrollText.setText(s + "\n.\n.\n.");
+         scrollText.setText("\n.\n.\n.\n");
+         
+         //System.out.println(new PokemonBattle(selectedBuggle().getBPokemon(), prof.getBPokemon()));
+         PokemonBattle test= new PokemonBattle(selectedBuggle().getBPokemon(), prof.getBPokemon());
+         h= test.getAttackStat(); 
+         scrollText.setText("PROFESSOR CHALLENGES YOU TO THEIR CLASS. \nPRESS A TO BEGIN BATTLE:\n");
+         LinkedQueue <String> temp= new LinkedQueue<String>();
+         
+         while(h.size()>0){ //while there are still attacks in the queue 
+         battled=true;
+         //if they press A
+         String element= h.dequeue();
+         scrollText.setText(s+ element+"\n");
+         temp.enqueue(element);
+         }
+         
+         */
+        
         
         
       } else if (selectedBuggle.getPosition().equals(new Location(5,8))){
@@ -478,7 +487,7 @@ public class BuggleWorld extends JApplet
       }
     } else if (arg.equals("new Buggle()")) {
       clearOutput();
-      Buggle b = new Buggle(); // Note: new will automatically make b the selected buggle.
+      //Buggle b = new Buggle(); // Note: new will automatically make b the selected buggle.
     } else if (arg.equals("RIGHT")) {
       clearOutput();
       try { 
@@ -741,13 +750,27 @@ public class BuggleWorld extends JApplet
   
   
   public void initBattle() { 
-    p1 = new Pokemon ("Buneary", "Angelica", "Lyn"); 
-    p2 = new Pokemon ("Mr. Mime", "Mime", "Rhys"); 
+    // p1 = new Pokemon ("Buneary", "Angelica", "Lyn"); 
+    // p2 = new Pokemon ("Mr. Mime", "Mime", "Rhys"); 
+    System.out.println("BUHHHHH");
+    p1= selectedBuggle.getBPokemon(); //get the pokemon
+    tempPoke= selectedBuggle.getBPokemon(); //temp pokemon to store the original stats 
+    System.out.println("TEMP: " +tempPoke); //orig stats
+    p2= prof.getBPokemon();
     battle = new PokemonBattle(p1, p2); 
+    //System.out.println(p1);
+    //System.out.println(p2);
+    System.out.println("TEMP POST BATTLE: "+ tempPoke);
     System.out.println("Battle between " + p1.getNickName() + " and " + p2.getNickName() + ", start! \n" 
                          + battle.playPokemonBattle(p1, p2).getNickName() + " wins!"); 
+    
+     System.out.println("TEMP POST BATTLE: "+ tempPoke);
+    //maybe have to save the orig stats into another string variable since if the character wins (we play before), then don't show the stats increase until later.
+    
+    System.out.println("p1:" +p1);
     battleLog = battle.getAttackStat(); 
     battleLength = battleLog.size(); 
+     System.out.println("TEMP POST BATTLE: "+ tempPoke);
     //System.out.println(battleLog.dequeue()); 
   }
   
@@ -776,7 +799,7 @@ public class BuggleWorld extends JApplet
     }
     
     //Buggle prof = new Buggle(); 
-    prof= new Buggle();
+    prof= new Buggle("Buneary","Angelica","Lyn");
     Location profLoc = new Location (x,y); 
     prof.setPosition(profLoc); 
     
@@ -791,7 +814,7 @@ public class BuggleWorld extends JApplet
     if (bagels > 0) {
       //int x = rand.intBetween(1, width);
       //int y = rand.intBetween(2, height);
-        placeBagels(bagels, width, height);
+      placeBagels(bagels, width, height);
     }
   }
   
@@ -835,7 +858,7 @@ public class BuggleWorld extends JApplet
     debugPrintln("Calling drawCell (2) from buggleMoved");
     grid.drawCell(newpos);
   }
-    
+  
   public void draw (Buggle b) {
     debugPrintln("Draw buggle " + b);
     debugPrintln("Position = " + nullify(b.position()));
@@ -849,7 +872,7 @@ public class BuggleWorld extends JApplet
     else
       return obj.toString();
   }
-    
+  
   // [lyn,11/11/06] Modified to handle null case correctly
   public Color markColorAt(Location p) {
     Color c = marks[p.x][p.y];
@@ -859,7 +882,7 @@ public class BuggleWorld extends JApplet
       return c;
     }
   }
-    
+  
   protected int getBuggleDelay () { //[9/6/04]
     return buggleDelay;
   }
@@ -949,8 +972,8 @@ class BuggleGrid extends Canvas //{
     gfx.setColor(gridLineColor);
     gfx.fillRect(0, 0, canvasSize.width, canvasSize.height);
     
-   
-
+    
+    
     
     // [lyn, 11/11/06] Now display the grid itself.
     gfx.setColor(floorColor);
@@ -1063,19 +1086,19 @@ class BuggleGrid extends Canvas //{
     
     // Compute triangle based on direction; there must be a cleverer way to do this!
     /*Point p1 = new Point(0,0);
-    double insetFactor = 0.5;
-    int insetX = (int) Math.floor(insetFactor * r.width); // unlike with bagels, no grid line to consider
-    int insetY = (int) Math.floor(insetFactor * r.height); // unlike with bagels, no grid line to consider
-    int width = r.width - 1; // [lyn, 11/11/06] Decrement so additions make sense in discrete grid
-    int height = r.height - 1;
-    p1.x = r.x + insetX;
-    p1.y = r.y + insetY;
-    */
+     double insetFactor = 0.5;
+     int insetX = (int) Math.floor(insetFactor * r.width); // unlike with bagels, no grid line to consider
+     int insetY = (int) Math.floor(insetFactor * r.height); // unlike with bagels, no grid line to consider
+     int width = r.width - 1; // [lyn, 11/11/06] Decrement so additions make sense in discrete grid
+     int height = r.height - 1;
+     p1.x = r.x + insetX;
+     p1.y = r.y + insetY;
+     */
     g.setPaintMode();
     try { 
       System.out.println("painting"); 
-        Image sprite = img; 
-        g.drawImage(sprite, x, y, this); 
+      Image sprite = img; 
+      g.drawImage(sprite, x, y, this); 
     } catch (Exception e) { 
     }
   }
@@ -1678,9 +1701,9 @@ class Buggle {
   
   //KARINA EDITS 12/4/13
   private Pokemon you; 
-    
-    
-    
+  
+  
+  
   private Direction heading;
   private Color color;       // Color of the Buggle.
   private boolean trailmode = true;
@@ -1692,12 +1715,14 @@ class Buggle {
   private static final double insetFactor = 0.05; // Factor by which drawn buggle is inset from cell
   private BuggleExecuter exec;
   
-  public Buggle() {
+  public Buggle(String pokeName, String pokeNickName, String yourName) {
     this(_defaultColor, _defaultX, _defaultY, BuggleWorld.currentWorld);
     //KARINA EDIT 12/4/13
-    you= new Pokemon("Type", "Nickname", "Yourname");
-   
+    you= new Pokemon(pokeName, pokeNickName, yourName);
+    
   }
+  
+  
   
   public Buggle (BuggleWorld w) {
     this(_defaultColor, _defaultX, _defaultY, w);
@@ -1736,6 +1761,7 @@ class Buggle {
   
   //KARINA EDIT 12/4/13
   public Pokemon getBPokemon(){
+    System.out.println("OOO");
     return you;
   }
   
@@ -1913,7 +1939,7 @@ class Buggle {
     world.addString(position, Integer.toString(n));
     return n;
   }
-    
+  
   public Color getColor () {
     exec.waitIfNecessary("getColor()");
     return color;

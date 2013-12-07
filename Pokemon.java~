@@ -1,5 +1,7 @@
 import java.util.*; 
 
+import javafoundations.*;
+
 public class Pokemon { 
   private String name;
   private String nickName;
@@ -8,6 +10,7 @@ public class Pokemon {
   private int spd; 
   private String trainer;
   private ProfessorTree <Pokemon> fam; 
+   private ArrayStack visited; 
   
   
   public Pokemon (String name, String nickName, String trainer) { 
@@ -19,6 +22,11 @@ public class Pokemon {
     this.hp=rand.nextInt(200)+200; //random between 200-400; ; 
     this.atk=rand.nextInt(50)+50; //random between 50-100; ; 
     this.spd=rand.nextInt(50)+50; //random between 50-100; ;
+    visited= new ArrayStack(); //no one in this stack yet.
+  }
+  
+  public ArrayStack getVisited(){
+    return visited;
   }
   
   public Pokemon (String name, String nickname, String trainer, int spd){
