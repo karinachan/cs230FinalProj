@@ -43,9 +43,6 @@ public class BuggleWorld extends JApplet
   // which the new buggle will live. 
   public boolean inReset = false; // [lyn, 9/2/07] Tracks whether or not we are in the middle of a reset. 
   private BuggleGrid grid;
-  private JPanel gameControlPanel; 
-  private JPanel bagPanel;
-  private JLabel bagContents; 
   private JPanel instructionPanel; // **** was Panel
   private JPanel controlPanel;
   private JPanel setPositionPanel;
@@ -232,6 +229,13 @@ public class BuggleWorld extends JApplet
       initializeBagels();
       initializeStrings(); //[9/6/04]
       buggles = new Vector();
+      //resets battleCounter to 0 so that the next battle sequence is shown
+      battleCounter=0; 
+      //clears scrollText
+      scrollText.setText(""); 
+      //every time we reset, we haven't actually battled yet
+      battled=false; 
+      
       //creates boundaries and professor buggle
       System.out.println("1"); 
       createStadium(this.getGraphics(),9,9); 
@@ -246,12 +250,6 @@ public class BuggleWorld extends JApplet
       System.out.println("4"); 
       exec.reset();
       debugPrintln("Finish BuggleWorld.reset()");
-      //resets battleCounter to 0 so that the next battle sequence is shown
-      battleCounter=0; 
-      //clears scrollText
-      scrollText.setText(""); 
-      //every time we reset, we haven't actually battled yet
-      battled=false; 
   } 
   
   // Creates the BuggleWorld GUI
@@ -261,7 +259,7 @@ public class BuggleWorld extends JApplet
     this.makeInstructionPanel(); // Make panel for instructions to the selected buggle
     this.makeControlPanel(); // Make panel for controlling execution of the buggle program
     // this.makeOutput();  // Make the area for displaying textual feedback
-    this.makeGameControlPanel(); 
+    //this.makeGameControlPanel(); 
     Container c = getContentPane(); //****
     
     debugPrintln("Setting world layout");
@@ -270,10 +268,11 @@ public class BuggleWorld extends JApplet
     //puts the overworld in the center
     c.add(grid, BorderLayout.CENTER); 
     //puts the controls on the right side of the GUI
-    c.add(gameControlPanel, BorderLayout.EAST); 
+    c.add(instructionPanel, BorderLayout.EAST); 
     c.add(controlPanel, BorderLayout.PAGE_END); 
   }
   
+  /*
   private void makeGameControlPanel() { 
     gameControlPanel = new JPanel(); 
     //gameControlPanel.setBackground(Color.white);
@@ -290,7 +289,7 @@ public class BuggleWorld extends JApplet
     bagContents = new JLabel("INVENTORY"); 
     bagPanel.add(bagContents); 
   }
-  
+  */
   private void makeInstructionPanel() {
     instructionPanel = new JPanel();
     //Container cp = instructionPanel.getContentPane(); //****
@@ -477,6 +476,7 @@ public class BuggleWorld extends JApplet
           }
           battleCounter++; 
         } else { 
+          System.out.println("battleCounter = " + battleCounter + " battleLength = " + battleLength); 
           battled=true; 
           inBattle=false; 
 //          scrollText.setText(battle.getStatus()); 
@@ -777,22 +777,16 @@ public class BuggleWorld extends JApplet
     p1= selectedBuggle.getBPokemon(); //get the pokemon
     tempPoke= selectedBuggle.getBPokemon(); //temp pokemon to store the original stats 
     System.out.println("TEMP: " +tempPoke); //orig stats
-    System.out.println("100"); 
     if (treeOrder.hasNext()) {
-      System.out.println("200"); 
       p2 = (Pokemon)treeOrder.next(); 
       System.out.println(treeOrder.next()); 
-      System.out.println("300"); 
     }
-    System.out.println("400"); 
     battle = new PokemonBattle(p1, p2);
-    System.out.println("500"); 
     first= battle.getStatus(); //the FIRST STATEMENT 
-    System.out.println("600"); 
     //System.out.println(p1);
     //System.out.println(p2);
     System.out.println("TEMP POST BATTLE: "+ tempPoke);
-    System.out.println("FHEOIWJFIOQJEIOJWE"); 
+    battle.playPokemonBattle(); 
     //System.out.println("Battle between " + p1.getNickName() + " and " + p2.getNickName() + ", start! \n" 
       //                   + battle.playPokemonBattle(p1, p2).getNickName() + " wins!"); 
     //System.out.println("QQQQQQQQQQQQQQQQQQQQQQQQQ"); 
