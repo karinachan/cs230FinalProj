@@ -125,7 +125,12 @@ public class Pokemon {
   public void attack(Pokemon p) {
     //String s=this.getNickName() + " attacked " + p; 
     //int pre_hp=p.hp; 
-    p.hp-=this.atk; 
+    //adds more randomness to the battle, making it more exciting
+    Random rand = new Random(); 
+    int crit = rand.nextInt(20);
+    System.out.println("The crit is: " + crit); 
+    int dmg = atk+crit; 
+    p.hp-=dmg; 
     //s+=p + "'s HP dropped from " + pre_hp + " to " + p.hp + "."; 
     //return s; 
   }

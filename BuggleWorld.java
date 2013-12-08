@@ -85,9 +85,14 @@ public class BuggleWorld extends JApplet
   private int battleCounter=0;
   private int battleLength;
   private boolean inBattle=false; 
+  private boolean battled=false; 
   private String first;
   
   
+  private ProfessorTree<Pokemon> tree; 
+  private Iterator treeOrder; 
+  private int treeCounter=0; 
+    
   public void debugPrintln(String s) {
     if (debugOn) 
       System.out.println("Debug: " + s);
@@ -171,8 +176,14 @@ public class BuggleWorld extends JApplet
     // but does not draw it yet. 
     debugPrintln("Making executer");
     exec = new BuggleExecuter(this); // BuggleExecuter for the RUN thread. 
+    //this is the Pokemon that we keep with us always
+    //need to make it before reset so that it doesn't change during reset
+    p1 = new Pokemon ("Pikachu", "Pika", "Karilaur", 300, 1175, 175); 
+    //create professorTree and the iterator for said tree
+    tree = p1.createOpponents(); 
+    treeOrder = tree.iterator();
     inReset = true; // [lyn, 9/2/07] Track whether we're in reset, for cellChanged();
-    //   This *cannot* be done in reset() itself, since that's overridable.
+    //   This *cannot* be done in reset() itself, since that's overridable.    
     reset(); // Sets the state of BuggleWorld. 
     // This can be overridden by subclasses, but all overriding methods 
     // must call super.reset(). Any work done before super.reset() should
@@ -181,9 +192,13 @@ public class BuggleWorld extends JApplet
     // (e.g., walls, bagels, buggles, etc.).
     // Note that reset() can also be called explicitly by pressing the reset button.
     inReset = false; // [lyn, 9/2/07] Track whether we're in reset, for cellChanged();
+
     // Note: grid.paint() is not a part of reset() itself, because reset() is overridable
     // by programmer, and don't want to draw grid until know all of the state changes. 
-    //grid.paint(); // draw the BuggleWorld grid after all state updates have been made. 
+    //grid.paint(); // draw the BuggleWorld grid after all state updates have been made.
+    
+    
+    
   }
   
   
@@ -210,23 +225,33 @@ public class BuggleWorld extends JApplet
   // with BuggleWorld (cells, walls, bagels, buggles, etc.) and displaying the state 
   // in the grid. 
   public void reset() {
-    System.out.println("HELLO THERE");
-    debugPrintln("reset()");
-    initializeWalls();
-    marks = new Color [cols+1] [rows+1]; // Entries will be null unless set otherwise.
-    initializeBagels();
-    initializeStrings(); //[9/6/04]
-    buggles = new Vector();
-    //creates boundaries and professor buggle
-    createStadium(this.getGraphics(),9,9); 
-    Location start = new Location (5,1); 
-    selectedBuggle = new Buggle("Pikachu", "Pika", "Karilaur", 300, 75, 75); //default stats are average
-    //selectedBuggle = new Buggle("Pikachu", "Pika", "Karilaur");
-    selectedBuggle.setPosition(start); 
-    //placeBagels(1, 9, 9);
-    initBattle(); 
-    exec.reset();
-    debugPrintln("Finish BuggleWorld.reset()");
+    System.out.println("We've just reset."); 
+      debugPrintln("reset()");
+      initializeWalls();
+      marks = new Color [cols+1] [rows+1]; // Entries will be null unless set otherwise.
+      initializeBagels();
+      initializeStrings(); //[9/6/04]
+      buggles = new Vector();
+      //creates boundaries and professor buggle
+      System.out.println("1"); 
+      createStadium(this.getGraphics(),9,9); 
+      Location start = new Location (5,1); 
+      System.out.println("2"); 
+      selectedBuggle = new Buggle(p1); //default stats are average
+      //selectedBuggle = new Buggle("Pikachu", "Pika", "Karilaur");
+      selectedBuggle.setPosition(start); 
+      //placeBagels(1, 9, 9);
+      System.out.println("3"); 
+      initBattle(); 
+      System.out.println("4"); 
+      exec.reset();
+      debugPrintln("Finish BuggleWorld.reset()");
+      //resets battleCounter to 0 so that the next battle sequence is shown
+      battleCounter=0; 
+      //clears scrollText
+      scrollText.setText(""); 
+      //every time we reset, we haven't actually battled yet
+      battled=false; 
   } 
   
   // Creates the BuggleWorld GUI
@@ -426,7 +451,7 @@ public class BuggleWorld extends JApplet
       //can't access B button in the middle of a battle
       if (inBattle) { 
         String s = scrollText.getText(); 
-        scrollText.setText(s + "You can't press B now! \nYou're in the middle of a battle!\n"); 
+        scrollText.setText(s + "You can't press B now! You're in the middle of a battle!\n"); 
         
         //12/4/13
       } else { 
@@ -452,52 +477,35 @@ public class BuggleWorld extends JApplet
           }
           battleCounter++; 
         } else { 
+          battled=true; 
           inBattle=false; 
-          scrollText.setText(battle.getStatus()); 
+//          scrollText.setText(battle.getStatus()); 
           if (!battle.hasWonYet()) { 
+            JOptionPane.showMessageDialog(currentWorld, battle.getStatus());
             reset();
           } else { 
-            System.out.println("freedom!"); 
+            JOptionPane.showMessageDialog(currentWorld, battle.getStatus());
             //horizontalWalls[7][7]=true; 
             horizontalWalls[7][4]=false; 
             grid.paintGrid(); 
           }
           //temp= p1;
         }
-        
-        
-        /*  //stores previous text
-         String s = scrollText.getText(); 
-         //adds more text
-         scrollText.setText(s + "\nOh, hello! Welcome to my class."); 
-         scrollText.setText(s + "\n.\n.\n.");
-         scrollText.setText("\n.\n.\n.\n");
-         
-         //System.out.println(new PokemonBattle(selectedBuggle().getBPokemon(), prof.getBPokemon()));
-         PokemonBattle test= new PokemonBattle(selectedBuggle().getBPokemon(), prof.getBPokemon());
-         h= test.getAttackStat(); 
-         scrollText.setText("PROFESSOR CHALLENGES YOU TO THEIR CLASS. \nPRESS A TO BEGIN BATTLE:\n");
-         LinkedQueue <String> temp= new LinkedQueue<String>();
-         
-         while(h.size()>0){ //while there are still attacks in the queue 
-         battled=true;
-         //if they press A
-         String element= h.dequeue();
-         scrollText.setText(s+ element+"\n");
-         temp.enqueue(element);
-         }
-         
-         */
-        
-        
-        
       } else if (selectedBuggle.getPosition().equals(new Location(5,8))){
         String s = scrollText.getText(); 
-        scrollText.setText(s + "\nHey! Stop standing on me!"); 
+        scrollText.setText(s + "Hey! Stop standing on me!\n"); 
+      } else if (selectedBuggle.getPosition().equals(new Location(9,9))) {
+        System.out.println("You can reset now!"); 
+        reset(); 
       } else { 
         String s = scrollText.getText(); 
-        scrollText.setText(s + "\nPlease come closer!"); 
+        if (battle.hasWonYet() && battled) { 
+        scrollText.setText(s + "Proceed to the next professor!\n"); 
+        } else {
+        scrollText.setText(s + "Please come closer!\n"); 
+        }
       }
+
     } else if (arg.equals("new Buggle()")) {
       clearOutput();
       //Buggle b = new Buggle(); // Note: new will automatically make b the selected buggle.
@@ -769,16 +777,27 @@ public class BuggleWorld extends JApplet
     p1= selectedBuggle.getBPokemon(); //get the pokemon
     tempPoke= selectedBuggle.getBPokemon(); //temp pokemon to store the original stats 
     System.out.println("TEMP: " +tempPoke); //orig stats
-    p2= prof.getBPokemon();
-    battle = new PokemonBattle(p1, p2); 
+    System.out.println("100"); 
+    if (treeOrder.hasNext()) {
+      System.out.println("200"); 
+      p2 = (Pokemon)treeOrder.next(); 
+      System.out.println(treeOrder.next()); 
+      System.out.println("300"); 
+    }
+    System.out.println("400"); 
+    battle = new PokemonBattle(p1, p2);
+    System.out.println("500"); 
     first= battle.getStatus(); //the FIRST STATEMENT 
+    System.out.println("600"); 
     //System.out.println(p1);
     //System.out.println(p2);
     System.out.println("TEMP POST BATTLE: "+ tempPoke);
-    System.out.println("Battle between " + p1.getNickName() + " and " + p2.getNickName() + ", start! \n" 
-                         + battle.playPokemonBattle(p1, p2).getNickName() + " wins!"); 
-    
-     System.out.println("TEMP POST BATTLE: "+ tempPoke);
+    System.out.println("FHEOIWJFIOQJEIOJWE"); 
+    //System.out.println("Battle between " + p1.getNickName() + " and " + p2.getNickName() + ", start! \n" 
+      //                   + battle.playPokemonBattle(p1, p2).getNickName() + " wins!"); 
+    //System.out.println("QQQQQQQQQQQQQQQQQQQQQQQQQ"); 
+     //System.out.println("TEMP POST BATTLE: "+ tempPoke);
+     //System.out.println("YYYYYYYYYYYYY"); 
     //maybe have to save the orig stats into another string variable since if the character wins (we play before), then don't show the stats increase until later.
     
     System.out.println("p1:" +p1);
@@ -814,7 +833,7 @@ public class BuggleWorld extends JApplet
       horizontalWalls[x+i][y-2-i] = true; 
     }
     //Buggle prof = new Buggle(); 
-    prof= new Buggle("Buneary","Angelica","Lyn");
+    prof= new Buggle(p2);
     Location profLoc = new Location (x,y); 
     prof.setPosition(profLoc); 
     
@@ -1729,6 +1748,12 @@ class Buggle {
   // private static final int inset = 3; // Number of pixels by which drawn buggle is inset from cell edge
   private static final double insetFactor = 0.05; // Factor by which drawn buggle is inset from cell
   private BuggleExecuter exec;
+  
+  public Buggle(Pokemon buddy) {
+    this(_defaultColor, _defaultX, _defaultY, BuggleWorld.currentWorld);
+    //KARINA EDIT 12/4/13
+    you= buddy;
+  }
   
   public Buggle(String pokeName, String pokeNickName, String yourName) {
     this(_defaultColor, _defaultX, _defaultY, BuggleWorld.currentWorld);
