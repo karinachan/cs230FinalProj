@@ -21,24 +21,23 @@ public class PokemonBattle {
   
   
   public PokemonBattle (Pokemon self, Pokemon opp) {
-    try{ 
-      if (self.getWon().peek().equals(opp)) hasWonYet=true;
-      battleStatus= "Beaten already, leave now.";
-      //System.out.println(battleStatus);
-      
-    } 
+    hasWonYet=false;
+    battleStatus="You've entered "+ opp.getTrainer() +"'s \nclassroom.\nPress 'A' to begin fighting!"; 
     
-    catch (EmptyCollectionException e){
-      battleStatus="You've entered "+ opp.getTrainer() +"'s \nclassroom.\nPress 'A' to begin fighting!"; 
-      System.out.println(battleStatus);
-      hasWonYet=false;
       p1=self;
       fam=self.createOpponents(); //creates the tree
       orighp=p1.getHP();
       p2=opp;
       result = false;
       attackstats= new LinkedQueue <String> (); 
-    }
+      try { 
+        if (self.getWon().peek().equals(opp)) {
+          hasWonYet=true;
+          battleStatus= "Beaten already, leave now.";
+          //System.out.println(battleStatus);
+        }
+      } catch (EmptyCollectionException e){
+      }
   }
   
   
@@ -95,6 +94,8 @@ public class PokemonBattle {
     if (!hasWonYet){
       System.out.println("2"); 
       do {
+          System.out.println("P1 exists YAY" + p1);           
+          System.out.println("P2 exists YAY" + p2); 
         if (p1.getSPD()>=p2.getSPD()){
           p1.attack(p2);
           attackstats.enqueue(p1.getNickName()+ " had ATTACK OF "+p1.getATK()+"!\n");
@@ -133,7 +134,7 @@ public class PokemonBattle {
         //hasWonYet=true;
       }
       
-      //resultBattle(p2);
+      resultBattle(p2);
       
       
     } else {
@@ -207,11 +208,12 @@ public class PokemonBattle {
   
   public static void main (String[] args) { 
     Pokemon lyn = new Pokemon ("Buneary", "Angelica", "Lyn"); 
-    System.out.println(lyn);
+    //System.out.println(lyn);
     Pokemon rhys = new Pokemon ("Mr. Mime", "Mime", "Rhys"); 
-    System.out.println(rhys);
+    //System.out.println(rhys);
     PokemonBattle fight1 = new PokemonBattle(lyn, rhys);
-    System.out.println(fight1.getStatus());
+    fight1.playPokemonBattle(); 
+    /*System.out.println(fight1.getStatus());
     System.out.println("***\n"+fight1); 
     System.out.println(lyn);
     System.out.println(lyn.getWon());
@@ -219,6 +221,7 @@ public class PokemonBattle {
     PokemonBattle fight2= new PokemonBattle(lyn, rhys); //will return a statement in the interpretor
     System.out.println(lyn.getWon());
     System.out.println(fight2.getStatus());
+    */
   }
 }
 

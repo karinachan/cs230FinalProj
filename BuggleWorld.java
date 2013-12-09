@@ -176,6 +176,7 @@ public class BuggleWorld extends JApplet
     //this is the Pokemon that we keep with us always
     //need to make it before reset so that it doesn't change during reset
     p1 = new Pokemon ("Pikachu", "Pika", "Karilaur", 300, 1175, 175); 
+    //selectedBuggle = new Buggle(p1); 
     //create professorTree and the iterator for said tree
     tree = p1.createOpponents(); 
     treeOrder = tree.iterator();
@@ -774,18 +775,23 @@ public class BuggleWorld extends JApplet
     // p1 = new Pokemon ("Buneary", "Angelica", "Lyn"); 
     // p2 = new Pokemon ("Mr. Mime", "Mime", "Rhys"); 
     System.out.println("BUHHHHH");
-    p1= selectedBuggle.getBPokemon(); //get the pokemon
-    tempPoke= selectedBuggle.getBPokemon(); //temp pokemon to store the original stats 
-    System.out.println("TEMP: " +tempPoke); //orig stats
+    //p1= selectedBuggle.getBPokemon(); //get the pokemon
+    //tempPoke= selectedBuggle.getBPokemon(); //temp pokemon to store the original stats 
+    //System.out.println("TEMP: " +tempPoke); //orig stats
     if (treeOrder.hasNext()) {
-      p2 = (Pokemon)treeOrder.next(); 
-      System.out.println(treeOrder.next()); 
+      p2 = (Pokemon)treeOrder.next();
     }
+    System.out.println("P1 EXISTS YAAAAY: " + p1); 
+    System.out.println("P2 EXISTS YAAAAY: " + p2); 
     battle = new PokemonBattle(p1, p2);
     first= battle.getStatus(); //the FIRST STATEMENT 
     //System.out.println(p1);
     //System.out.println(p2);
-    System.out.println("TEMP POST BATTLE: "+ tempPoke);
+    //System.out.println("TEMP POST BATTLE: "+ tempPoke);
+    /*
+    System.out.println("P1 EXISTS: " + p1); 
+    System.out.println("P2 EXISTS: " + p2); 
+    */
     battle.playPokemonBattle(); 
     //System.out.println("Battle between " + p1.getNickName() + " and " + p2.getNickName() + ", start! \n" 
       //                   + battle.playPokemonBattle(p1, p2).getNickName() + " wins!"); 
@@ -794,7 +800,6 @@ public class BuggleWorld extends JApplet
      //System.out.println("YYYYYYYYYYYYY"); 
     //maybe have to save the orig stats into another string variable since if the character wins (we play before), then don't show the stats increase until later.
     
-    System.out.println("p1:" +p1);
     battleLog = battle.getAttackStat(); 
     battleLength = battleLog.size(); 
      System.out.println("TEMP POST BATTLE: "+ tempPoke);
