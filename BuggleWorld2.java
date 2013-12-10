@@ -22,7 +22,7 @@ import javafoundations.*;
 import javax.swing.border.*;
 
 //**************************************************************************
-public class BuggleWorld extends JApplet
+public class BuggleWorld2 extends JApplet
   implements ActionListener {
   
   public int rows = 9;    // Number of rows.
@@ -36,7 +36,7 @@ public class BuggleWorld extends JApplet
   private boolean boundariesAreWalls = true;
   private final static Color backgroundColor = Color.green;
   private final static Color buttonBackgroundColor = Color.white;
-  public static BuggleWorld currentWorld; // The currently active BuggleWorld
+  public static BuggleWorld2 currentWorld; // The currently active BuggleWorld2
   // (the one most recently created or in which 
   //  a menu item has been pressed.)
   // This is used as an implicit argument to the 
@@ -100,14 +100,14 @@ public class BuggleWorld extends JApplet
   /*** [lyn, 8/22/07] New code for running an applet as an application ***/
   
   public static void main (String[] args) {
-    runAsApplication(new BuggleWorld(), "BuggleWorld"); 
+    runAsApplication(new BuggleWorld2(), "BuggleWorld2"); 
   }
   
-  public static void runAsApplication (final BuggleWorld applet, final String name) {
+  public static void runAsApplication (final BuggleWorld2 applet, final String name) {
     // Schedule a job for the event-dispatching thread:
     // creating and showing this buggle world applet. 
     javax.swing.SwingUtilities.invokeLater(new Runnable() {
-      public void run() { // this is Java's thread run() method, not BuggleWorlds!
+      public void run() { // this is Java's thread run() method, not BuggleWorld2s!
         JFrame.setDefaultLookAndFeelDecorated(true); // enable window decorations. 
         JFrame frame = new JFrame(name); // create and set up the window.
         frame.setSize(800, 500); // Default frame size (should make these settable variables!)
@@ -166,11 +166,11 @@ public class BuggleWorld extends JApplet
     currentWorld = this; // Make this world the current "active" world.
     // Used as the default world in which new Buggles will live.
     debugPrintln("setup();");
-    setup(); // One-time initializations from BuggleWorld subclasses, 
+    setup(); // One-time initializations from BuggleWorld2 subclasses, 
     // such as setDimensions and creation of ParameterFrames.
-    // Any such initializations cannot depend on the state of BuggleWorld
+    // Any such initializations cannot depend on the state of BuggleWorld2
     // or its grid, since these haven't been created yet. 
-    createGUI(); // Create the BuggleWorld GUI. This allocates space for the grid,
+    createGUI(); // Create the BuggleWorld2 GUI. This allocates space for the grid,
     // but does not draw it yet. 
     debugPrintln("Making executer");
     exec = new BuggleExecuter(this); // BuggleExecuter for the RUN thread. 
@@ -183,7 +183,7 @@ public class BuggleWorld extends JApplet
     treeOrder = tree.iterator();
     inReset = true; // [lyn, 9/2/07] Track whether we're in reset, for cellChanged();
     //   This *cannot* be done in reset() itself, since that's overridable.    
-    reset(); // Sets the state of BuggleWorld. 
+    reset(); // Sets the state of BuggleWorld2. 
     // This can be overridden by subclasses, but all overriding methods 
     // must call super.reset(). Any work done before super.reset() should
     // only set instance variables, since the world state has not be reset yet. 
@@ -194,7 +194,7 @@ public class BuggleWorld extends JApplet
 
     // Note: grid.paint() is not a part of reset() itself, because reset() is overridable
     // by programmer, and don't want to draw grid until know all of the state changes. 
-    //grid.paint(); // draw the BuggleWorld grid after all state updates have been made.
+    //grid.paint(); // draw the BuggleWorld2 grid after all state updates have been made.
     
     
     
@@ -207,7 +207,7 @@ public class BuggleWorld extends JApplet
   }
   
   
-  // Sets the rows and cols of this BuggleWorld, but does not cause anything to be drawn
+  // Sets the rows and cols of this BuggleWorld2, but does not cause anything to be drawn
   // or redrawn. The drawing is done by the reset() method. 
   public void setDimensions (int cols, int rows) {
     debugPrintln("Start setDimensions(" + cols + ", " + rows + ")");
@@ -216,12 +216,12 @@ public class BuggleWorld extends JApplet
   }
   
   // [lyn, 9/1/07] Long-awaited restructuring of init() and reset()!
-  // reset() is the key BuggleWorld state-setting method, called both by init() 
+  // reset() is the key BuggleWorld2 state-setting method, called both by init() 
   // and pressing the RESET button. 
   // It is assumed that rows and cols are appropriately set before calling reset(),
   // that the BuggleExecuter exec already exists, and that all user-interface components
   // have been created. This method is responsible for creating the state associated
-  // with BuggleWorld (cells, walls, bagels, buggles, etc.) and displaying the state 
+  // with BuggleWorld2 (cells, walls, bagels, buggles, etc.) and displaying the state 
   // in the grid. 
   public void reset() {
     System.out.println("We've just reset."); 
@@ -251,10 +251,10 @@ public class BuggleWorld extends JApplet
       initBattle(); 
       System.out.println("4"); 
       exec.reset();
-      debugPrintln("Finish BuggleWorld.reset()");
+      debugPrintln("Finish BuggleWorld2.reset()");
   } 
   
-  // Creates the BuggleWorld GUI
+  // Creates the BuggleWorld2 GUI
   public void createGUI() {
     //initBattle(); 
     grid = new BuggleGrid(this);  // Make grid in which buggles are displayed
@@ -425,7 +425,7 @@ public class BuggleWorld extends JApplet
     //    created a new world or pressed a menu button in another world. 
     //    The only way to avoid such problems in general is to 
     //    invoke new Buggle(<world>), where <world> is an explicit
-    //    BuggleWorld argument for the correct BuggleWorld instance. 
+    //    BuggleWorld2 argument for the correct BuggleWorld2 instance. 
     currentWorld = this; 
     // [lyn, 9/2/07] Reset this variable, in case it's gotten out of sync: 
     inReset = false; 
@@ -447,7 +447,7 @@ public class BuggleWorld extends JApplet
       inReset = false; // [lyn, 9/2/07] Track whether we're in reset, for cellChanged();
       // Note: grid.paint() is not a part of reset() itself, because reset() is overridable
       // by programmer, and don't want to draw grid until know all of the state changes. 
-      grid.paint(); // draw the BuggleWorld grid after all state updates have been made. 
+      grid.paint(); // draw the BuggleWorld2 grid after all state updates have been made. 
     } else if (arg.equals("B")) {
       //can't access B button in the middle of a battle
       if (inBattle) { 
@@ -696,12 +696,12 @@ public class BuggleWorld extends JApplet
   }
   
   public void paint( Graphics g ) {
-    //debugPrintln("BuggleWorld asked by system to paint(g).");
+    //debugPrintln("BuggleWorld2 asked by system to paint(g).");
     super.paint( g );
   }
   
   // public void paintComponent( Graphics g ) { // need to extend JPanel for this?
-  //  //debugPrintln("BuggleWorld asked by system to paint(g).");
+  //  //debugPrintln("BuggleWorld2 asked by system to paint(g).");
   //  super.paintComponent( g );
   // }
   
@@ -709,7 +709,7 @@ public class BuggleWorld extends JApplet
     // This is a hook that subclasses can override without having to worry 
     // about other operations that might be performed by start().
     // By default, does nothing. 
-    // this.printError("Default run() behavior of BuggleWorld is to do nothing.");
+    // this.printError("Default run() behavior of BuggleWorld2 is to do nothing.");
   }
   
   // New predicate for checking if location is in the buggle grid
@@ -781,7 +781,7 @@ public class BuggleWorld extends JApplet
   public void add (Buggle b) {
     // System.out.println("Buggles=" + buggles );
     buggles.addElement(b);
-    debugPrintln("Calling BuggleGrid.draw() from BuggleWorld.add(Buggle)");
+    debugPrintln("Calling BuggleGrid.draw() from BuggleWorld2.add(Buggle)");
     grid.draw(b);
   }
   
@@ -945,9 +945,9 @@ public class BuggleWorld extends JApplet
 class BuggleGrid extends Canvas //{
   implements MouseListener, MouseMotionListener { // ***
   
-  /* A rectangular area of the BuggleWorld applet that displays the state of the world */
+  /* A rectangular area of the BuggleWorld2 applet that displays the state of the world */
   
-  public BuggleWorld world;
+  public BuggleWorld2 world;
   // private Graphics gfx; // Graphics context of this grid
   private int cellWidth;
   private int cellHeight;
@@ -972,7 +972,7 @@ class BuggleGrid extends Canvas //{
     this.addMouseMotionListener(this); // ***
   }
   
-  public BuggleGrid(BuggleWorld bw) {
+  public BuggleGrid(BuggleWorld2 bw) {
     world = bw;
     // Note: do *not* call makeGrid() here, since Canvas has not yet been allocated real-estate on screen.
   }
@@ -1512,7 +1512,7 @@ class BuggleExecuter {
   // Make only one of these.
   private Thread thread; // Make new thread every time reset.
   //private javax.swing.Timer timer; // **** Make new thread every time reset.
-  private BuggleWorld world; 
+  private BuggleWorld2 world; 
   private boolean stepMode = false;
   private boolean isFirstSteppedInstruction = true;
   private String currentInstruction;
@@ -1524,7 +1524,7 @@ class BuggleExecuter {
   private static final int DELAY = 30; // ****
   private static boolean execDebug = false;
   
-  public BuggleExecuter(BuggleWorld w) {
+  public BuggleExecuter(BuggleWorld2 w) {
     world = w;
     runner = new BuggleRunner(w);
     init();
@@ -1694,10 +1694,10 @@ class BuggleExecuter {
 class BuggleRunner implements Runnable {
   /* A way to encapsulate the behavior of the buggles into a thread-like object */
   
-  private BuggleWorld world;
+  private BuggleWorld2 world;
   private boolean done = false;
   
-  public BuggleRunner(BuggleWorld w) {
+  public BuggleRunner(BuggleWorld2 w) {
     // System.out.println("new Buggle(runner)");
     world = w;
   }
@@ -1724,25 +1724,25 @@ class Buggle {
   
   // Although buggles are normally presented as having four pieces of state
   // (position, heading, color, and brush state), there is an important
-  // fifth piece of state: the BuggleWorld in which the buggle lives. 
+  // fifth piece of state: the BuggleWorld2 in which the buggle lives. 
   // 
-  // There may be multiple BuggleWorlds in existence at any one time;
+  // There may be multiple BuggleWorld2s in existence at any one time;
   // how does a buggle know which one to live in? There are two ways:
   // 
-  // (1) A BuggleWorld instance can be explicitly provided to the Buggle constructor.
+  // (1) A BuggleWorld2 instance can be explicitly provided to the Buggle constructor.
   //     But since the world is not advertised as a piece of state, most
   //     users won't know about this option. 
   // 
-  // (2) If no BuggleWorld instance is explicitly provided to the Buggle constructor,
-  //     it implicitly uses the currently "active" BuggleWorld, which is the
+  // (2) If no BuggleWorld2 instance is explicitly provided to the Buggle constructor,
+  //     it implicitly uses the currently "active" BuggleWorld2, which is the
   //     one in which one of the following two actions has most recently occurred:
-  //     1) The BuggleWorld has been created
-  //     2) A menu item has been pressed in the BuggleWorld. 
-  //     The class variable BuggleWorld.currentWorld holds the currently active
-  //     instance of BuggleWorld. 
+  //     1) The BuggleWorld2 has been created
+  //     2) A menu item has been pressed in the BuggleWorld2. 
+  //     The class variable BuggleWorld2.currentWorld holds the currently active
+  //     instance of BuggleWorld2. 
   
   private char direction = 's'; 
-  private BuggleWorld world;  // The world to which the Buggle belongs.
+  private BuggleWorld2 world;  // The world to which the Buggle belongs.
   private Location position;   // Location of the Buggle
   private static final int _defaultX = 1;
   private static final int _defaultY = 1;
@@ -1764,39 +1764,39 @@ class Buggle {
   private BuggleExecuter exec;
   
   public Buggle(Pokemon buddy) {
-    this(_defaultColor, _defaultX, _defaultY, BuggleWorld.currentWorld);
+    this(_defaultColor, _defaultX, _defaultY, BuggleWorld2.currentWorld);
     //KARINA EDIT 12/4/13
     you= buddy;
   }
   
   public Buggle(String pokeName, String pokeNickName, String yourName) {
-    this(_defaultColor, _defaultX, _defaultY, BuggleWorld.currentWorld);
+    this(_defaultColor, _defaultX, _defaultY, BuggleWorld2.currentWorld);
     //KARINA EDIT 12/4/13
     you= new Pokemon(pokeName, pokeNickName, yourName);
   }
   
   public Buggle(String pokeName, String pokeNickName, String yourName, 
                 int hp, int atk, int spd) {
-    this(_defaultColor, _defaultX, _defaultY, BuggleWorld.currentWorld);
+    this(_defaultColor, _defaultX, _defaultY, BuggleWorld2.currentWorld);
     //KARINA EDIT 12/4/13
     you= new Pokemon(pokeName, pokeNickName, yourName, hp, atk, spd);
   }
   
   
   
-  public Buggle (BuggleWorld w) {
+  public Buggle (BuggleWorld2 w) {
     this(_defaultColor, _defaultX, _defaultY, w);
   }
   
   public Buggle(int x, int y) {
-    this(_defaultColor, x, y, BuggleWorld.currentWorld);
+    this(_defaultColor, x, y, BuggleWorld2.currentWorld);
   }
   
   public Buggle(Color c) {
-    this(c, _defaultX, _defaultY, BuggleWorld.currentWorld);
+    this(c, _defaultX, _defaultY, BuggleWorld2.currentWorld);
   }
   
-  public Buggle(Color c, int x, int y, BuggleWorld w) {
+  public Buggle(Color c, int x, int y, BuggleWorld2 w) {
     //  System.out.println ("New Buggle.");
     color = c;
     position = new Location(x, y);
@@ -1805,7 +1805,7 @@ class Buggle {
     world = w; 
     //System.out.println ("Getting world.");
     if (world == null) 
-      throw new BuggleException("BuggleWorld of newly created buggle is null!");
+      throw new BuggleException("BuggleWorld2 of newly created buggle is null!");
     else {
       //System.out.println ("Adding robot to world" + world);
     }
@@ -2108,7 +2108,7 @@ class Direction {
 }
 
 //**************************************************************************
-// [lyn, 8/22/07] New class for immutable points. BuggleWorld
+// [lyn, 8/22/07] New class for immutable points. BuggleWorld2
 //   now uses these rather than the mutable Point class to 
 //   avoid some knotty Buggle contract issues with immutable points. 
 

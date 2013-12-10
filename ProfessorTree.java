@@ -220,7 +220,8 @@ public class ProfessorTree<T> implements Iterable<T>{
   public Iterator<T> byGenerations() {
     LinkedQueue<BTNode<T>> queue = new LinkedQueue<BTNode<T>>();
     ArrayIterator<T> iter = new ArrayIterator<T>();
-    for (int i=0; i<tree.length; i++) {
+    BTNode head= new BTNode(tree[0]);
+    for (int i=1; i<tree.length; i++) {
       queue.enqueue(new BTNode(tree[i]));
       while (!queue.isEmpty()) {
         BTNode<T> current = queue.dequeue();
@@ -233,8 +234,10 @@ public class ProfessorTree<T> implements Iterable<T>{
         if (current.getRight() != null)
           queue.enqueue(current.getRight());
       }
-      }
-      return iter;
+    }
+    queue.enqueue(head);
+    iter.add((T) head.getElement());
+    return iter;
   }
   
     public ProfessorTree<String> createsGameTree(){ //pokemon

@@ -237,7 +237,7 @@ public class ProfessorTree<T> implements Iterable<T>{
       return iter;
   }
   
-  public ProfessorTree<String> createsGameTree(){ //pokemon
+    public ProfessorTree<String> createsGameTree(){ //pokemon
     ProfessorTree<String> fam = new ProfessorTree<String>("KBot"); 
     //ordered by CS classes taught- and then arbitrarily ordered because there overlap in the dept..
     fam.setLeft("KBot", "Ellen"); 
@@ -262,7 +262,6 @@ public class ProfessorTree<T> implements Iterable<T>{
     //System.out.println(fam);
     return fam; 
   }
-    
     
   public ProfessorTree<T> shuffle(){
     ProfessorTree shuffled= new ProfessorTree (top);
