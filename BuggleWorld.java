@@ -7,7 +7,8 @@
  * 
  */
 
-
+import sun.audio.*; 
+import java.net.*; 
 import java.awt.*;
 import java.awt.event.*; // ***
 import java.applet.*;  // applet.* ??
@@ -466,6 +467,20 @@ public class BuggleWorld extends JApplet
       //when the player is next to the professor, execute this code when 
       //the player presses aButton to talk to the professor
       if (selectedBuggle.getPosition().equals(new Location(5,7))) { 
+        try {
+              System.out.println("Play music!"); 
+              URL song = new URL ("http://cs.wellesley.edu/~lzeng/Final%20Project/Pokemon%20Yellow%20Gym%20Leader%20Theme.wav"); 
+              HttpURLConnection urlConn = (HttpURLConnection)song.openConnection(); 
+              urlConn.addRequestProperty("User-Agent", "Mozilla/4.76"); 
+              InputStream audioSrc = urlConn.getInputStream(); 
+              DataInputStream read = new DataInputStream(audioSrc); 
+              AudioStream as = new AudioStream(read); 
+              AudioPlayer.player.start(as); 
+            } catch (Exception e) { 
+              System.out.println(e); 
+              System.out.println("Music is not playing."); 
+            }
+    
         if (battleCounter<=battleLength) {  //so it goes to one above
           if (battleCounter==0) {  //so the battle status prints first hu hu hu
             inBattle=true; 
