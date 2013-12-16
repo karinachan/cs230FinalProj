@@ -7,8 +7,6 @@
  * 
  */
 
-import sun.audio.*; 
-import java.net.*; 
 import java.awt.*;
 import java.awt.event.*; // ***
 import java.applet.*;  // applet.* ??
@@ -34,7 +32,7 @@ public class PokeWorld extends BuggleWorld
   public boolean horizontalWalls [] [];  // leftmost points of horizontal wall segments.
   public boolean verticalWalls [] [];  // bottommost points of vertical wall segments.
   private boolean boundariesAreWalls = true;
-  private final static Color backgroundColor = Color.green;
+  private final static Color backgroundColor = Color.black;
   private final static Color buttonBackgroundColor = Color.white;
   public static PokeWorld currentWorld; // The currently active PokeWorld
   // (the one most recently created or in which 
@@ -225,8 +223,10 @@ public class PokeWorld extends BuggleWorld
   // in the grid. 
   public void reset() {
     System.out.println("We've just reset."); 
+     
       debugPrintln("reset()");
       initializeWalls();
+      
       marks = new Color [cols+1] [rows+1]; // Entries will be null unless set otherwise.
       initializeBagels();
       initializeStrings(); //[9/6/04]
@@ -241,6 +241,7 @@ public class PokeWorld extends BuggleWorld
       //creates boundaries and professor poke
       System.out.println("1"); 
       createStadium(this.getGraphics(),9,9); 
+      //grid.paint(); 
       Location start = new Location (5,1); 
       System.out.println("2"); 
       selectedPoke = new Poke(p1); //default stats are average
@@ -252,6 +253,9 @@ public class PokeWorld extends BuggleWorld
       System.out.println("4"); 
       exec.reset();
       debugPrintln("Finish PokeWorld.reset()");
+      
+     
+      
   } 
   
   // Creates the PokeWorld GUI
@@ -467,6 +471,7 @@ public class PokeWorld extends BuggleWorld
       //when the player is next to the professor, execute this code when 
       //the player presses aButton to talk to the professor
       if (selectedPoke.getPosition().equals(new Location(5,7))) { 
+        /*
         try {
               System.out.println("Play music!"); 
               URL song = new URL ("http://cs.wellesley.edu/~lzeng/Final%20Project/Pokemon%20Yellow%20Gym%20Leader%20Theme.wav"); 
@@ -480,7 +485,7 @@ public class PokeWorld extends BuggleWorld
               System.out.println(e); 
               System.out.println("Music is not playing."); 
             }
-    
+    */
         if (battleCounter<=battleLength) {  //so it goes to one above
           if (battleCounter==0) {  //so the battle status prints first hu hu hu
             inBattle=true; 
@@ -502,8 +507,13 @@ public class PokeWorld extends BuggleWorld
           } else { 
             JOptionPane.showMessageDialog(currentWorld, battle.getStatus());
             //horizontalWalls[7][7]=true; 
+             if (!treeOrder.hasNext()){
+        JOptionPane.showMessageDialog(currentWorld, "YOU WON THE GAME OMG OMG OMG");
+        
+             } else {
             horizontalWalls[7][4]=false; 
             grid.paintGrid(); 
+             }
           }
           //temp= p1;
         }
@@ -527,28 +537,46 @@ public class PokeWorld extends BuggleWorld
       //Poke b = new Poke(); // Note: new will automatically make b the selected poke.
     } else if (arg.equals("RIGHT")) {
       clearOutput();
+      if (!inBattle){
       try { 
         selectedPoke().right();
       } catch (MoveException me) { 
+      } } else {
+        
+        String s= scrollText.getText();
+          scrollText.setText(s+"\nCan't run away now!\n");
       }
     } else if (arg.equals("LEFT")) {
       clearOutput();
-      try { 
-        selectedPoke().left();
-      } catch (MoveException me) { 
-      }
+      if (!inBattle) {
+        try { 
+          selectedPoke().left();
+        } catch (MoveException me) { 
+        } } else { 
+          String s= scrollText.getText();
+          scrollText.setText(s+"\nCan't run away now!\n");
+          
+        }
     } else if (arg.equals("UP")) {
       clearOutput();
-      try { 
-        selectedPoke().up();
-      } catch (MoveException me) { 
-      }
+      if(!inBattle){
+        try { 
+          selectedPoke().up();
+        } catch (MoveException me) { 
+        } } else {String s= scrollText.getText();
+          scrollText.setText(s+"\nCan't run away now!\n");
+          
+        }
     } else if (arg.equals("DOWN")) {
       clearOutput();
+      if (!inBattle){
       try { 
         selectedPoke().down();
       } catch (MoveException me) { 
-      }
+      } } else {String s= scrollText.getText();
+          scrollText.setText(s+"\nCan't run away now!\n");
+          
+        }
     }
   }
   
@@ -847,6 +875,7 @@ public class PokeWorld extends BuggleWorld
       horizontalWalls[x+i][y-2-i] = true; 
     }
     //Poke prof = new Poke(); 
+    grid.paint(); 
     prof= new Poke(p2);
     Location profLoc = new Location (x,y); 
     prof.setPosition(profLoc); 
@@ -953,7 +982,7 @@ class PokeGrid extends Canvas //{
   private int cellHeight;
   private Rectangle gridRect;
   private final static Color floorColor = Color.white;
-  private final static Color gridLineColor = Color.green;
+  private final static Color gridLineColor = Color.black;
   private final static Color bagelColor = new Color (200,100,50);
   private final static Color wallColor = Color.black;
   private Point lastHorizontalWall;
