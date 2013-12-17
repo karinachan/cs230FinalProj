@@ -8,9 +8,16 @@
 //  Represents the introduction panel for the GradLayout program.
 //********************************************************************
 
+import sun.audio.*; 
+import java.net.*;
+import java.io.*;
+
+
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+
+
 
 public class WelcomePanel extends JPanel
 { 
@@ -33,6 +40,19 @@ public class WelcomePanel extends JPanel
     JLabel l2 = new JLabel ("------------------------");
     JLabel l3 = new JLabel ("<html><h3 style='color: white; margin-left: 25px; margin-right: 25px; margin-top: 5px; margin-bottom: 25px; '> Created by Karina Chan and Laura Zeng</h3></html>");
     l3.setFont(new Font("Rockwell", Font.PLAIN, 16));
+    try {
+      System.out.println("Play music!"); 
+      URL song = new URL ("http://cs.wellesley.edu/~lzeng/Final%20Project/Pokemon%20Yellow%20Gym%20Leader%20Theme.wav"); 
+      HttpURLConnection urlConn = (HttpURLConnection)song.openConnection(); 
+      urlConn.addRequestProperty("User-Agent", "Mozilla/4.76"); 
+      InputStream audioSrc = urlConn.getInputStream(); 
+      DataInputStream read = new DataInputStream(audioSrc); 
+      AudioStream as = new AudioStream(read); 
+      AudioPlayer.player.start(as); 
+    } catch (Exception e) { 
+      System.out.println(e); 
+      System.out.println("Music is not playing."); 
+    }
     
     //adds labels and a picture
     add (l1, BorderLayout.PAGE_START);

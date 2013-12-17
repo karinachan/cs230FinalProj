@@ -22,7 +22,6 @@ public class HomeGUI
  // [lyn. 8/30/07] Using EXIT_ON_CLOSE empirically exits all instances of an application.
  //   Use DISPOSE_ON_CLOSE to get rid of just one. 
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE); 
-
         // [lyn. 8/30/07] Need to add to frame and make visible *before* init 
         //   so that attempts to reset dimensions will work. 
         frame.add(applet, BorderLayout.CENTER); // add applet to window

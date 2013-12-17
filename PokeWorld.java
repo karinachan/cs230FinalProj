@@ -72,6 +72,7 @@ public class PokeWorld extends BuggleWorld
   private boolean debugOn = false;
   private JTextArea scrollText; 
   private JScrollPane scrollBox;
+
   
   
   //Pokemon Battle
@@ -83,11 +84,14 @@ public class PokeWorld extends BuggleWorld
   private boolean inBattle=false; 
   private boolean battled=false; 
   private String first;
+  private String username;
+
   
   
   private ProfessorTree<Pokemon> tree; 
   private Iterator treeOrder; 
   private int treeCounter=0; 
+ 
     
   public void debugPrintln(String s) {
     if (debugOn) 
@@ -102,6 +106,7 @@ public class PokeWorld extends BuggleWorld
   }
   
   public static void runAsApplication (final PokeWorld applet, final String name) {
+    
     // Schedule a job for the event-dispatching thread:
     // creating and showing this poke world applet. 
     javax.swing.SwingUtilities.invokeLater(new Runnable() {
@@ -127,7 +132,10 @@ public class PokeWorld extends BuggleWorld
         tp.add("Welcome!",wel); //tab for welcome
         test.add(applet, BorderLayout.CENTER); // add applet to window
         tp.add("Play", test); //tab for playing 
-        
+        tp.add("About Us", new AboutPanel());
+       // ExportPanel ex= new ExportPanel();
+       // tp.add("Export", ex);
+        frame.add(tp);
         
         
         
@@ -145,8 +153,7 @@ public class PokeWorld extends BuggleWorld
         //JLabel comment= new JLabel("mpo"); //so this works, test AboutPanel() again... 
         //testPanel.add(comment); 
         //tp.add("About Us", testPanel);//SEE ABOVE ugh 
-        tp.add("About Us", new AboutPanel());
-        frame.add(tp);
+        
         frame.setVisible(true); // display the window.
         applet.init(); // initialize the applet
         // [lyn. 8/30/07] Need to make visible again *after* init in case
@@ -174,7 +181,8 @@ public class PokeWorld extends BuggleWorld
     exec = new PokeExecuter(this); // PokeExecuter for the RUN thread. 
     //this is the Pokemon that we keep with us always
     //need to make it before reset so that it doesn't change during reset
-    p1 = new Pokemon ("Pikachu", "Pika", "Karilaur", 300, 1175, 175); 
+    p1 = new Pokemon ("Pikachu", "Pika", "KariLaur" , 300, 1175, 175); 
+    
     //selectedPoke = new Poke(p1); 
     //create professorTree and the iterator for said tree
     tree = p1.createOpponents(); 
@@ -222,6 +230,11 @@ public class PokeWorld extends BuggleWorld
   // with PokeWorld (cells, walls, bagels, pokes, etc.) and displaying the state 
   // in the grid. 
   public void reset() {
+    if (p1.getWonSize()==0){
+      username= JOptionPane.showInputDialog("Enter your name: ");
+      p1= new Pokemon("Pikachu","Pika", username, 300, 100, 100);
+      
+    }
     System.out.println("We've just reset."); 
      
       debugPrintln("reset()");
@@ -250,6 +263,8 @@ public class PokeWorld extends BuggleWorld
       //placeBagels(1, 9, 9);
       System.out.println("3"); 
       initBattle(); 
+      scrollText.setText("You are in "+p2.getTrainer()+"'s classroom! \nPress A to interact.\n");
+      //scrollText.setText(scrollText.getText()+ "Your professor is "+ p2.getTrainer() +"!");
       System.out.println("4"); 
       exec.reset();
       debugPrintln("Finish PokeWorld.reset()");
@@ -505,15 +520,25 @@ public class PokeWorld extends BuggleWorld
             JOptionPane.showMessageDialog(currentWorld, battle.getStatus());
             reset();
           } else { 
-            JOptionPane.showMessageDialog(currentWorld, battle.getStatus());
+            
             //horizontalWalls[7][7]=true; 
-             if (!treeOrder.hasNext()){
-        JOptionPane.showMessageDialog(currentWorld, "YOU WON THE GAME OMG OMG OMG");
-        
-             } else {
-            horizontalWalls[7][4]=false; 
-            grid.paintGrid(); 
-             }
+            if (!treeOrder.hasNext()){
+              JOptionPane.showMessageDialog(currentWorld, "YOU WON THE GAME OMG OMG OMG! Check the folder for your diploma!");
+              try {
+              
+              PrintWriter writer = new PrintWriter(username+ ".txt", "UTF-8");
+              writer.println("Congratulations "+ username + ",");
+              writer.println("You have earned a CS diploma from Wellesley College");
+              writer.println("Love, KBot");
+              writer.close();
+              } catch (Exception e) {
+                System.out.println("No diploma, sorry. You won though!");
+              }
+            } else {
+              JOptionPane.showMessageDialog(currentWorld, battle.getStatus());
+              horizontalWalls[7][4]=false; 
+              grid.paintGrid(); 
+            }
           }
           //temp= p1;
         }
@@ -525,11 +550,17 @@ public class PokeWorld extends BuggleWorld
         reset(); 
       } else { 
         String s = scrollText.getText(); 
-        if (battle.hasWonYet() && battled) { 
+        
+ 
+        
+        if (battle.hasWonYet() && battled) {
+          
         scrollText.setText(s + "Proceed to the next professor!\n"); 
         } else {
         scrollText.setText(s + "Please come closer!\n"); 
         }
+        
+        if (!treeOrder.hasNext()) scrollText.setText("Check the folder for your diploma!\n");
       }
 
     } else if (arg.equals("new Poke()")) {

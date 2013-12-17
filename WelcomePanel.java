@@ -40,7 +40,7 @@ public class WelcomePanel extends JPanel
     JLabel l2 = new JLabel ("------------------------");
     JLabel l3 = new JLabel ("<html><h3 style='color: white; margin-left: 25px; margin-right: 25px; margin-top: 5px; margin-bottom: 25px; '> Created by Karina Chan and Laura Zeng</h3></html>");
     l3.setFont(new Font("Rockwell", Font.PLAIN, 16));
-    try {
+   /* try {
       System.out.println("Play music!"); 
       URL song = new URL ("http://cs.wellesley.edu/~lzeng/Final%20Project/Pokemon%20Yellow%20Gym%20Leader%20Theme.wav"); 
       HttpURLConnection urlConn = (HttpURLConnection)song.openConnection(); 
@@ -53,6 +53,7 @@ public class WelcomePanel extends JPanel
       System.out.println(e); 
       System.out.println("Music is not playing."); 
     }
+    */
     
     //adds labels and a picture
     add (l1, BorderLayout.PAGE_START);

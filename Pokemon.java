@@ -40,6 +40,10 @@ public class Pokemon {
     return wonList;
   }
   
+  public int getWonSize(){
+    return wonList.size();
+  }
+  
   public Pokemon (String name, String nickname, String trainer, int spd){
     this(name, nickname, trainer);
     Random rand = new Random();
@@ -84,9 +88,11 @@ public class Pokemon {
     fam.setLeft(takis, stella); 
     fam.setRight(takis, brian); 
     fam.setLeft(orit, jean); 
-    fam.setRight(orit, sohie); 
+    fam.setRight(orit, sohie);  
     
     fam.shuffle(); 
+    
+    
     //System.out.println(fam);
     return fam;
   }
