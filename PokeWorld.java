@@ -20,12 +20,12 @@ import javafoundations.*;
 import javax.swing.border.*;
 
 //**************************************************************************
-public class BuggleWorld extends BuggleWorld
+public class PokeWorld extends JApplet //extends BuggleWorld
   implements ActionListener {
   
   public int rows = 9;    // Number of rows.
   public int cols = 9;    // Number of columns.
-  public Vector buggles;    // The buggles in the world.
+  public Vector pokes;    // The pokes in the world.
   public boolean bagels [] [];    // Bagels (at most one per cell).
   public String strings [] [];    //[9/6/04] Strings (at most one per cell).
   public Color marks [] [];     // The trail marks in the world;
@@ -34,14 +34,14 @@ public class BuggleWorld extends BuggleWorld
   private boolean boundariesAreWalls = true;
   private final static Color backgroundColor = Color.black;
   private final static Color buttonBackgroundColor = Color.white;
-  public static BuggleWorld currentWorld; // The currently active BuggleWorld
+  public static PokeWorld currentWorld; // The currently active PokeWorld
   // (the one most recently created or in which 
   //  a menu item has been pressed.)
   // This is used as an implicit argument to the 
-  // Buggle constructor, to indicate the world in
-  // which the new buggle will live. 
+  // Poke constructor, to indicate the world in
+  // which the new poke will live. 
   public boolean inReset = false; // [lyn, 9/2/07] Tracks whether or not we are in the middle of a reset. 
-  private BuggleGrid grid;
+  private PokeGrid grid;
   private JPanel instructionPanel; // **** was Panel
   private JPanel controlPanel;
   private JPanel setPositionPanel;
@@ -49,10 +49,10 @@ public class BuggleWorld extends BuggleWorld
   private JPanel setColorPanel;
   private JPanel setDelayPanel; // [9/6/04]
   //private JLabel output;
-  public BuggleExecuter exec;
-  private Buggle selectedBuggle, prof;  // Currently selected buggle.
-  // Menu items apply to this buggle. 
-  // By default, it's the most recently created buggle. 
+  public PokeExecuter exec;
+  private Poke selectedPoke, prof;  // Currently selected poke.
+  // Menu items apply to this poke. 
+  // By default, it's the most recently created poke. 
   // Color selected in colorChoices menu
   private int selectedX = 1; 
   private int selectedY = 1; 
@@ -67,16 +67,16 @@ public class BuggleWorld extends BuggleWorld
   private JComboBox xChoices; // ****
   private JComboBox yChoices; // ****
   private JComboBox delayChoices; // [9/6/04]
-  private int buggleDelay = 0; // [9/6/04] Amount of time buggle waits between moves.
-  // [9/6/04] Can be used to slow down buggle. 
+  private int pokeDelay = 0; // [9/6/04] Amount of time poke waits between moves.
+  // [9/6/04] Can be used to slow down poke. 
   private boolean debugOn = false;
   private JTextArea scrollText; 
   private JScrollPane scrollBox;
-
+  
   
   
   //Pokemon Battle
-  private Pokemon p1, p2, tempBuggle; //temp stores the original values and p1 stores the other values
+  private Pokemon p1, p2, tempPoke; //temp stores the original values and p1 stores the other values
   private PokemonBattle battle; 
   private LinkedQueue<String> battleLog; 
   private int battleCounter=0;
@@ -85,14 +85,14 @@ public class BuggleWorld extends BuggleWorld
   private boolean battled=false; 
   private String first;
   private String username;
-
+  
   
   
   private ProfessorTree<Pokemon> tree; 
   private Iterator treeOrder; 
   private int treeCounter=0; 
- 
-    
+  
+  
   public void debugPrintln(String s) {
     if (debugOn) 
       System.out.println("Debug: " + s);
@@ -102,18 +102,18 @@ public class BuggleWorld extends BuggleWorld
   /*** [lyn, 8/22/07] New code for running an applet as an application ***/
   
   public static void main (String[] args) {
-    runAsApplication(new BuggleWorld(), "BuggleWorld"); 
+    runAsApplication(new PokeWorld(), "PokeWorld"); 
   }
   
-  public static void runAsApplication (final BuggleWorld applet, final String name) {
+  public static void runAsApplication (final PokeWorld applet, final String name) {
     
     // Schedule a job for the event-dispatching thread:
-    // creating and showing this buggle world applet. 
+    // creating and showing this poke world applet. 
     javax.swing.SwingUtilities.invokeLater(new Runnable() {
-      public void run() { // this is Java's thread run() method, not BuggleWorlds!
+      public void run() { // this is Java's thread run() method, not PokeWorlds!
         JFrame.setDefaultLookAndFeelDecorated(true); // enable window decorations. 
         JFrame frame = new JFrame(name); // create and set up the window.
-        frame.setSize(800, 500); // Default frame size (should make these settable variables!)
+        frame.setSize(800, 600); // Default frame size (should make these settable variables!)
         //dont't reset the size
         frame.setResizable(false); 
         // [lyn. 8/30/07] Using EXIT_ON_CLOSE empirically exits all instances of an application.
@@ -133,8 +133,8 @@ public class BuggleWorld extends BuggleWorld
         test.add(applet, BorderLayout.CENTER); // add applet to window
         tp.add("Play", test); //tab for playing 
         tp.add("About Us", new AboutPanel());
-       // ExportPanel ex= new ExportPanel();
-       // tp.add("Export", ex);
+        // ExportPanel ex= new ExportPanel();
+        // tp.add("Export", ex);
         frame.add(tp);
         
         
@@ -169,38 +169,40 @@ public class BuggleWorld extends BuggleWorld
   public void init() {
     debugPrintln("Start init();");
     currentWorld = this; // Make this world the current "active" world.
-    // Used as the default world in which new Buggles will live.
+    // Used as the default world in which new Pokes will live.
     debugPrintln("setup();");
-    setup(); // One-time initializations from BuggleWorld subclasses, 
+    setup(); // One-time initializations from PokeWorld subclasses, 
     // such as setDimensions and creation of ParameterFrames.
-    // Any such initializations cannot depend on the state of BuggleWorld
+    // Any such initializations cannot depend on the state of PokeWorld
     // or its grid, since these haven't been created yet. 
-    createGUI(); // Create the BuggleWorld GUI. This allocates space for the grid,
+    createGUI(); // Create the PokeWorld GUI. This allocates space for the grid,
     // but does not draw it yet. 
     debugPrintln("Making executer");
-    exec = new BuggleExecuter(this); // BuggleExecuter for the RUN thread. 
-    //this is the Pokemon that we keep with us always
-    //need to make it before reset so that it doesn't change during reset
-    p1 = new Pokemon ("Pikachu", "Pika", "KariLaur" , 300, 1175, 175); 
+    exec = new PokeExecuter(this); // PokeExecuter for the RUN thread. 
+    //this Pokemon doesn't really matter; it only exists to make the professorTree
+    p1 = new Pokemon ("Pikachu", "Pika", "KariLaur" , 300, 1175, 175, new Image[]{}); 
     
-    //selectedBuggle = new Buggle(p1); 
+    //selectedPoke = new Poke(p1); 
     //create professorTree and the iterator for said tree
-    tree = p1.createOpponents(); 
-    treeOrder = tree.iterator();
+    try { 
+      tree = p1.createOpponents(); 
+      treeOrder = tree.iterator();
+    } catch (IOException ioe) { 
+    }
     inReset = true; // [lyn, 9/2/07] Track whether we're in reset, for cellChanged();
     //   This *cannot* be done in reset() itself, since that's overridable.    
-    reset(); // Sets the state of BuggleWorld. 
+    reset(); // Sets the state of PokeWorld. 
     // This can be overridden by subclasses, but all overriding methods 
     // must call super.reset(). Any work done before super.reset() should
     // only set instance variables, since the world state has not be reset yet. 
     // But work done after super.reset() can use the world state
-    // (e.g., walls, bagels, buggles, etc.).
+    // (e.g., walls, bagels, pokes, etc.).
     // Note that reset() can also be called explicitly by pressing the reset button.
     inReset = false; // [lyn, 9/2/07] Track whether we're in reset, for cellChanged();
-
+    
     // Note: grid.paint() is not a part of reset() itself, because reset() is overridable
     // by programmer, and don't want to draw grid until know all of the state changes. 
-    //grid.paint(); // draw the BuggleWorld grid after all state updates have been made.
+    //grid.paint(); // draw the PokeWorld grid after all state updates have been made.
     
     
     
@@ -213,7 +215,7 @@ public class BuggleWorld extends BuggleWorld
   }
   
   
-  // Sets the rows and cols of this BuggleWorld, but does not cause anything to be drawn
+  // Sets the rows and cols of this PokeWorld, but does not cause anything to be drawn
   // or redrawn. The drawing is done by the reset() method. 
   public void setDimensions (int cols, int rows) {
     debugPrintln("Start setDimensions(" + cols + ", " + rows + ")");
@@ -222,28 +224,43 @@ public class BuggleWorld extends BuggleWorld
   }
   
   // [lyn, 9/1/07] Long-awaited restructuring of init() and reset()!
-  // reset() is the key BuggleWorld state-setting method, called both by init() 
+  // reset() is the key PokeWorld state-setting method, called both by init() 
   // and pressing the RESET button. 
   // It is assumed that rows and cols are appropriately set before calling reset(),
-  // that the BuggleExecuter exec already exists, and that all user-interface components
+  // that the PokeExecuter exec already exists, and that all user-interface components
   // have been created. This method is responsible for creating the state associated
-  // with BuggleWorld (cells, walls, bagels, buggles, etc.) and displaying the state 
+  // with PokeWorld (cells, walls, bagels, pokes, etc.) and displaying the state 
   // in the grid. 
   public void reset() {
-    if (p1.getWonSize()==0){
-      username= JOptionPane.showInputDialog("Enter your name: ");
-      p1= new Pokemon("Pikachu","Pika", username, 300, 100, 100);
+    try { 
+      if (p1.getVisitSize()==0){
+        username= JOptionPane.showInputDialog("Enter your name: "); 
+        
+        Image sprite1 = ImageIO.read(new File("pikas.png"));
+        Image sprite2 = ImageIO.read(new File("pikaw.png"));
+        Image sprite3 = ImageIO.read(new File("pikae.png"));
+        Image sprite4 = ImageIO.read(new File("pikan.png"));
+        Image[] sprites = {sprite1, sprite2, sprite3, sprite4}; 
+        
+        p1 = new Pokemon("Pikachu","Pika", username, 100, 100, 100, sprites);
+        
+        
+      }
+      if (treeOrder.hasNext()) {
+        if (p1.getWonSize()==p1.getVisitSize()) { //if the number of wins != number of visits, then 
+          //you haven't won against your most recent opponent and must face them again
+          p2 = (Pokemon)treeOrder.next();
+        }
+      }
+      System.out.println("We've just reset."); 
       
-    }
-    System.out.println("We've just reset."); 
-     
       debugPrintln("reset()");
       initializeWalls();
       
       marks = new Color [cols+1] [rows+1]; // Entries will be null unless set otherwise.
       initializeBagels();
       initializeStrings(); //[9/6/04]
-      buggles = new Vector();
+      pokes = new Vector();
       //resets battleCounter to 0 so that the next battle sequence is shown
       battleCounter=0; 
       //clears scrollText
@@ -251,34 +268,40 @@ public class BuggleWorld extends BuggleWorld
       //every time we reset, we haven't actually battled yet
       battled=false; 
       
-      //creates boundaries and professor buggle
+      //creates boundaries and professor poke
       System.out.println("1"); 
       createStadium(this.getGraphics(),9,9); 
       //grid.paint(); 
       Location start = new Location (5,1); 
       System.out.println("2"); 
-      selectedBuggle = new Buggle(p1); //default stats are average
-      //selectedBuggle = new Buggle("Pikachu", "Pika", "Karilaur");
-      selectedBuggle.setPosition(start); 
-      //placeBagels(1, 9, 9);
-      System.out.println("3"); 
-      initBattle(); 
-      scrollText.setText("You are in "+p2.getTrainer()+"'s classroom! \nPress A to interact.\n");
-      //scrollText.setText(scrollText.getText()+ "Your professor is "+ p2.getTrainer() +"!");
-      System.out.println("4"); 
-      exec.reset();
-      debugPrintln("Finish BuggleWorld.reset()");
       
-     
-      
+      System.out.println(p2 + " EXISTS! WOOOOOOOOOOW") ; 
+      selectedPoke = new Poke(p2); 
+      selectedPoke.setPosition(new Location(5,8)); 
+      selectedPoke = new Poke(p1); //default stats are average
+      //selectedPoke = new Poke("Pikachu", "Pika", "Karilaur");
+      selectedPoke.setPosition(start); 
+    } catch (IOException ioe) { 
+    }
+    //placeBagels(1, 9, 9);
+    System.out.println("3"); 
+    initBattle(); 
+    scrollText.setText("You are in "+p2.getTrainer()+"'s classroom! \nPress A to interact.\n");
+    //scrollText.setText(scrollText.getText()+ "Your professor is "+ p2.getTrainer() +"!");
+    System.out.println("4"); 
+    exec.reset();
+    debugPrintln("Finish PokeWorld.reset()");
+    
+    
+    
   } 
   
-  // Creates the BuggleWorld GUI
+  // Creates the PokeWorld GUI
   public void createGUI() {
     //initBattle(); 
-    grid = new BuggleGrid(this);  // Make grid in which buggles are displayed
-    this.makeInstructionPanel(); // Make panel for instructions to the selected buggle
-    this.makeControlPanel(); // Make panel for controlling execution of the buggle program
+    grid = new PokeGrid(this);  // Make grid in which pokes are displayed
+    this.makeInstructionPanel(); // Make panel for instructions to the selected poke
+    this.makeControlPanel(); // Make panel for controlling execution of the poke program
     // this.makeOutput();  // Make the area for displaying textual feedback
     //this.makeGameControlPanel(); 
     Container c = getContentPane(); //****
@@ -290,27 +313,27 @@ public class BuggleWorld extends BuggleWorld
     c.add(grid, BorderLayout.CENTER); 
     //puts the controls on the right side of the GUI
     c.add(instructionPanel, BorderLayout.EAST); 
-    c.add(controlPanel, BorderLayout.PAGE_END); 
+    //c.add(controlPanel, BorderLayout.PAGE_END); 
   }
   
   /*
-  private void makeGameControlPanel() { 
-    gameControlPanel = new JPanel(); 
-    //gameControlPanel.setBackground(Color.white);
-    this.makeBagPanel(); 
-    gameControlPanel.setLayout(new BorderLayout()); 
-    gameControlPanel.add(bagPanel, BorderLayout.WEST); 
-    gameControlPanel.add(instructionPanel, BorderLayout.CENTER);
-    
-  }
-  
-  private void makeBagPanel() { 
-    bagPanel = new JPanel(); 
-    bagPanel.setBackground(Color.white);
-    bagContents = new JLabel("INVENTORY"); 
-    bagPanel.add(bagContents); 
-  }
-  */
+   private void makeGameControlPanel() { 
+   gameControlPanel = new JPanel(); 
+   //gameControlPanel.setBackground(Color.white);
+   this.makeBagPanel(); 
+   gameControlPanel.setLayout(new BorderLayout()); 
+   gameControlPanel.add(bagPanel, BorderLayout.WEST); 
+   gameControlPanel.add(instructionPanel, BorderLayout.CENTER);
+   
+   }
+   
+   private void makeBagPanel() { 
+   bagPanel = new JPanel(); 
+   bagPanel.setBackground(Color.white);
+   bagContents = new JLabel("INVENTORY"); 
+   bagPanel.add(bagContents); 
+   }
+   */
   private void makeInstructionPanel() {
     instructionPanel = new JPanel();
     //Container cp = instructionPanel.getContentPane(); //****
@@ -433,18 +456,18 @@ public class BuggleWorld extends BuggleWorld
     String arg = event.getActionCommand(); // ***   
     // [lyn, 9/1/07] Setting currentWorld when menu item pressed
     //    gives better support for multiple worlds. In particular,
-    //    new Buggle() will create a buggle in the world in which 
+    //    new Poke() will create a poke in the world in which 
     //    one of the following two actions has most recently occurred:
     //    (1) the world was created
     //    (2) a menu item in the world was pressed. 
     // 
     //    The only case where this behavior won't be correct is if 
     //    a long-running run() method invoked by a RUN method 
-    //    invokes new Buggle() after the user, in parallel, has
+    //    invokes new Poke() after the user, in parallel, has
     //    created a new world or pressed a menu button in another world. 
     //    The only way to avoid such problems in general is to 
-    //    invoke new Buggle(<world>), where <world> is an explicit
-    //    BuggleWorld argument for the correct BuggleWorld instance. 
+    //    invoke new Poke(<world>), where <world> is an explicit
+    //    PokeWorld argument for the correct PokeWorld instance. 
     currentWorld = this; 
     // [lyn, 9/2/07] Reset this variable, in case it's gotten out of sync: 
     inReset = false; 
@@ -466,7 +489,7 @@ public class BuggleWorld extends BuggleWorld
       inReset = false; // [lyn, 9/2/07] Track whether we're in reset, for cellChanged();
       // Note: grid.paint() is not a part of reset() itself, because reset() is overridable
       // by programmer, and don't want to draw grid until know all of the state changes. 
-      grid.paint(); // draw the BuggleWorld grid after all state updates have been made. 
+      grid.paint(); // draw the PokeWorld grid after all state updates have been made. 
     } else if (arg.equals("B")) {
       //can't access B button in the middle of a battle
       if (inBattle) { 
@@ -475,32 +498,32 @@ public class BuggleWorld extends BuggleWorld
         
         //12/4/13
       } else { 
-        //scrollText.setText("YOU ARE:"+ selectedBuggle().getBPokemon() + "\n");
-         System.out.println("TEMP POST BATTLE: "+ tempBuggle);
+        //scrollText.setText("YOU ARE:"+ selectedPoke().getBPokemon() + "\n");
+        System.out.println("TEMP POST BATTLE: "+ tempPoke);
         System.out.println("p1:" + p1);
-        System.out.println("temp:"+tempBuggle);
-        scrollText.setText("YOU ARE:"+ tempBuggle + "\n");
+        System.out.println("temp:"+tempPoke);
+        scrollText.setText("YOU ARE:"+ tempPoke + "\n");
         
       }
     } else if (arg.equals("A")) { 
       //when the player is next to the professor, execute this code when 
       //the player presses aButton to talk to the professor
-      if (selectedBuggle.getPosition().equals(new Location(5,7))) { 
+      if (selectedPoke.getPosition().equals(new Location(5,7))) { 
         /*
-        try {
-              System.out.println("Play music!"); 
-              URL song = new URL ("http://cs.wellesley.edu/~lzeng/Final%20Project/Pokemon%20Yellow%20Gym%20Leader%20Theme.wav"); 
-              HttpURLConnection urlConn = (HttpURLConnection)song.openConnection(); 
-              urlConn.addRequestProperty("User-Agent", "Mozilla/4.76"); 
-              InputStream audioSrc = urlConn.getInputStream(); 
-              DataInputStream read = new DataInputStream(audioSrc); 
-              AudioStream as = new AudioStream(read); 
-              AudioPlayer.player.start(as); 
-            } catch (Exception e) { 
-              System.out.println(e); 
-              System.out.println("Music is not playing."); 
-            }
-    */
+         try {
+         System.out.println("Play music!"); 
+         URL song = new URL ("http://cs.wellesley.edu/~lzeng/Final%20Project/Pokemon%20Yellow%20Gym%20Leader%20Theme.wav"); 
+         HttpURLConnection urlConn = (HttpURLConnection)song.openConnection(); 
+         urlConn.addRequestProperty("User-Agent", "Mozilla/4.76"); 
+         InputStream audioSrc = urlConn.getInputStream(); 
+         DataInputStream read = new DataInputStream(audioSrc); 
+         AudioStream as = new AudioStream(read); 
+         AudioPlayer.player.start(as); 
+         } catch (Exception e) { 
+         System.out.println(e); 
+         System.out.println("Music is not playing."); 
+         }
+         */
         if (battleCounter<=battleLength) {  //so it goes to one above
           if (battleCounter==0) {  //so the battle status prints first hu hu hu
             inBattle=true; 
@@ -525,12 +548,30 @@ public class BuggleWorld extends BuggleWorld
             if (!treeOrder.hasNext()){
               JOptionPane.showMessageDialog(currentWorld, "YOU WON THE GAME OMG OMG OMG! Check the folder for your diploma!");
               try {
-              
-              PrintWriter writer = new PrintWriter(username+ ".txt", "UTF-8");
-              writer.println("Congratulations "+ username + ",");
-              writer.println("You have earned a CS diploma from Wellesley College");
-              writer.println("Love, KBot");
-              writer.close();
+                
+                PrintWriter writer = new PrintWriter("diploma_" + username+ ".html", "UTF-8");
+                /*writer.println("Congratulations "+ username + ",");
+                writer.println("You have earned a CS diploma from Wellesley College");
+                writer.println("Love, KBot");*/
+                
+                writer.println("<!DOCTYPE html><html><head>"); 
+                writer.println("<link href='http://fonts.googleapis.com/css?family=Press+Start+2P' rel='stylesheet' type='text/css'>"); 
+                writer.println("<style>body { background-color:#ffffff;}"); 
+                writer.println("h1 { color:black; text-align:center; font-family: 'Press Start 2P', cursive; font-size:80px;}"); 
+                writer.println("h1.padding {  padding:7px 0px;}"); 
+                writer.println("p { text-align:center; font-family: 'Press Start 2P', cursive; font-size:18px; word-spacing:1px;}"); 
+                writer.println("p.padding { padding:20px 0px;}"); 
+                writer.println("footer { position:fixed; left:0px; bottom:0px; height:30px; width:100%; padding:10px 0px;"); 
+                writer.println(" text-align:center; font-family: 'Press Start 2P', cursive; font-size:20px;}"); 
+                writer.println(" img {    display: block;    margin-left: auto;    margin-right: auto;    border: 10px solid #021a40;    }"); 
+                writer.println("</style></head><body><br><br><br><h1 class='padding'>CONGRATULATIONS </h1>"); 
+                writer.println("<p class='padding'>On behalf of Wellesley College CS department, <br>you have earned a Bachelor of Pokemons"); 
+                writer.println(" Computer Science degree <br><br><br>"); 
+                writer.println("<img src='http://static2.wikia.nocookie.net/__cb20130701024612/trollpasta/images/b/b3/PIKACHU-pikachu-29274386-861-927_(1).jpg'"); 
+                writer.println(" alt='happy pikachu!' width='300' height='300'><br><p class='padding'>Love,<br>KBot</p>"); 
+                writer.println("</body></html>"); 
+                
+                writer.close();
               } catch (Exception e) {
                 System.out.println("No diploma, sorry. You won though!");
               }
@@ -542,46 +583,46 @@ public class BuggleWorld extends BuggleWorld
           }
           //temp= p1;
         }
-      } else if (selectedBuggle.getPosition().equals(new Location(5,8))){
+      } else if (selectedPoke.getPosition().equals(new Location(5,8))){
         String s = scrollText.getText(); 
         scrollText.setText(s + "Hey! Stop standing on me!\n"); 
-      } else if (selectedBuggle.getPosition().equals(new Location(9,9))) {
+      } else if (selectedPoke.getPosition().equals(new Location(9,9))) {
         System.out.println("You can reset now!"); 
         reset(); 
       } else { 
         String s = scrollText.getText(); 
         
- 
+        
         
         if (battle.hasWonYet() && battled) {
           
-        scrollText.setText(s + "Proceed to the next professor!\n"); 
+          scrollText.setText(s + "Proceed to the next professor!\n"); 
         } else {
-        scrollText.setText(s + "Please come closer!\n"); 
+          scrollText.setText(s + "Please come closer!\n"); 
         }
         
         if (!treeOrder.hasNext()) scrollText.setText("Check the folder for your diploma!\n");
       }
-
-    } else if (arg.equals("new Buggle()")) {
+      
+    } else if (arg.equals("new Poke()")) {
       clearOutput();
-      //Buggle b = new Buggle(); // Note: new will automatically make b the selected buggle.
+      //Poke b = new Poke(); // Note: new will automatically make b the selected poke.
     } else if (arg.equals("RIGHT")) {
       clearOutput();
       if (!inBattle){
-      try { 
-        selectedBuggle().right();
-      } catch (MoveException me) { 
-      } } else {
-        
-        String s= scrollText.getText();
+        try { 
+          selectedPoke().right();
+        } catch (MoveException me) { 
+        } } else {
+          
+          String s= scrollText.getText();
           scrollText.setText(s+"\nCan't run away now!\n");
-      }
+        }
     } else if (arg.equals("LEFT")) {
       clearOutput();
       if (!inBattle) {
         try { 
-          selectedBuggle().left();
+          selectedPoke().left();
         } catch (MoveException me) { 
         } } else { 
           String s= scrollText.getText();
@@ -592,7 +633,7 @@ public class BuggleWorld extends BuggleWorld
       clearOutput();
       if(!inBattle){
         try { 
-          selectedBuggle().up();
+          selectedPoke().up();
         } catch (MoveException me) { 
         } } else {String s= scrollText.getText();
           scrollText.setText(s+"\nCan't run away now!\n");
@@ -601,10 +642,10 @@ public class BuggleWorld extends BuggleWorld
     } else if (arg.equals("DOWN")) {
       clearOutput();
       if (!inBattle){
-      try { 
-        selectedBuggle().down();
-      } catch (MoveException me) { 
-      } } else {String s= scrollText.getText();
+        try { 
+          selectedPoke().down();
+        } catch (MoveException me) { 
+        } } else {String s= scrollText.getText();
           scrollText.setText(s+"\nCan't run away now!\n");
           
         }
@@ -630,7 +671,7 @@ public class BuggleWorld extends BuggleWorld
   public void printError (String s) {
     // Print error message in output area.
     // System.out.println("printError: " + s);
-    String message = "Buggle Error: " + s;
+    String message = "Poke Error: " + s;
     System.out.println(message);
     // Output is broken for now.
     // output.setForeground(Color.red);
@@ -663,21 +704,21 @@ public class BuggleWorld extends BuggleWorld
   }
   
   
-  public Buggle selectedBuggle () {
-    // Return the currentBuggle, or yell if it's null.
-    if (selectedBuggle == null) {
-      throw new BuggleException ("No buggle is selected!");
+  public Poke selectedPoke () {
+    // Return the currentPoke, or yell if it's null.
+    if (selectedPoke == null) {
+      throw new PokeException ("No poke is selected!");
     } else {
-      return selectedBuggle;
+      return selectedPoke;
     }
   }
   
-  protected void selectBuggle (Buggle b) {
-    Buggle previousSelected = selectedBuggle;
-    selectedBuggle = b;
-    this.buggleChanged(selectedBuggle);
+  protected void selectPoke (Poke b) {
+    Poke previousSelected = selectedPoke;
+    selectedPoke = b;
+    this.pokeChanged(selectedPoke);
     if (previousSelected != null) {
-      this.buggleChanged(previousSelected);
+      this.pokeChanged(previousSelected);
     }
   }
   
@@ -725,9 +766,9 @@ public class BuggleWorld extends BuggleWorld
     if ((0 <= x) && (x < cols) && (0 <= y) && (y <= rows)) {
       horizontalWalls[x][y] = true;
     } else {
-      throw new BuggleException(
-                                "addHorizontalWall: point out of range -- ("
-                                  + x + ", " + y + ")");
+      throw new PokeException(
+                              "addHorizontalWall: point out of range -- ("
+                                + x + ", " + y + ")");
     }
   }
   
@@ -736,31 +777,31 @@ public class BuggleWorld extends BuggleWorld
     if ((0 <= x) && (x <= cols) && (0 <= y) && (y < rows)) {
       verticalWalls[x][y] = true;
     } else {
-      throw new BuggleException(
-                                "addVerticalWall: point out of range -- ("
-                                  + x + ", " + y + ")");
+      throw new PokeException(
+                              "addVerticalWall: point out of range -- ("
+                                + x + ", " + y + ")");
     }
   }
   
   // public void start () {
   //   // System.out.println("start()");
-  //  //debugPrintln("Calling BuggleGraid.paint() from start()");
+  //  //debugPrintln("Calling PokeGraid.paint() from start()");
   //  //**** grid.paint(); // **** this caused problems - too soon? 
   // }
   
   public void start () {
     // System.out.println("start()");
-    debugPrintln("Calling BuggleGraid.paint() from start()");
+    debugPrintln("Calling PokeGraid.paint() from start()");
     grid.paint();  
   }
   
   public void paint( Graphics g ) {
-    //debugPrintln("BuggleWorld asked by system to paint(g).");
+    //debugPrintln("PokeWorld asked by system to paint(g).");
     super.paint( g );
   }
   
   // public void paintComponent( Graphics g ) { // need to extend JPanel for this?
-  //  //debugPrintln("BuggleWorld asked by system to paint(g).");
+  //  //debugPrintln("PokeWorld asked by system to paint(g).");
   //  super.paintComponent( g );
   // }
   
@@ -768,10 +809,10 @@ public class BuggleWorld extends BuggleWorld
     // This is a hook that subclasses can override without having to worry 
     // about other operations that might be performed by start().
     // By default, does nothing. 
-    // this.printError("Default run() behavior of BuggleWorld is to do nothing.");
+    // this.printError("Default run() behavior of PokeWorld is to do nothing.");
   }
   
-  // New predicate for checking if location is in the buggle grid
+  // New predicate for checking if location is in the poke grid
   public boolean isLocationInGrid (Location p) {
     return (p.x > 0) && (p.x <= cols) && (p.y > 0) && (p.y <= rows);
   }
@@ -837,10 +878,10 @@ public class BuggleWorld extends BuggleWorld
     return result;
   } 
   
-  public void add (Buggle b) {
-    // System.out.println("Buggles=" + buggles );
-    buggles.addElement(b);
-    debugPrintln("Calling BuggleGrid.draw() from BuggleWorld.add(Buggle)");
+  public void add (Poke b) {
+    // System.out.println("Pokes=" + pokes );
+    pokes.addElement(b);
+    debugPrintln("Calling PokeGrid.draw() from PokeWorld.add(Poke)");
     grid.draw(b);
   }
   
@@ -849,48 +890,40 @@ public class BuggleWorld extends BuggleWorld
     // p1 = new Pokemon ("Buneary", "Angelica", "Lyn"); 
     // p2 = new Pokemon ("Mr. Mime", "Mime", "Rhys"); 
     System.out.println("BUHHHHH");
-    //p1= selectedBuggle.getBPokemon(); //get the bugglemon
-    //tempBuggle= selectedBuggle.getBPokemon(); //temp bugglemon to store the original stats 
-    //System.out.println("TEMP: " +tempBuggle); //orig stats
-    if (treeOrder.hasNext()) {
-      p2 = (Pokemon)treeOrder.next();
-    }
+    //p1= selectedPoke.getBPokemon(); //get the pokemon
+    //tempPoke= selectedPoke.getBPokemon(); //temp pokemon to store the original stats 
+    //System.out.println("TEMP: " +tempPoke); //orig stats
+    
     System.out.println("P1 EXISTS YAAAAY: " + p1); 
     System.out.println("P2 EXISTS YAAAAY: " + p2); 
     battle = new PokemonBattle(p1, p2);
     first= battle.getStatus(); //the FIRST STATEMENT 
     //System.out.println(p1);
     //System.out.println(p2);
-    //System.out.println("TEMP POST BATTLE: "+ tempBuggle);
+    //System.out.println("TEMP POST BATTLE: "+ tempPoke);
     /*
-    System.out.println("P1 EXISTS: " + p1); 
-    System.out.println("P2 EXISTS: " + p2); 
-    */
+     System.out.println("P1 EXISTS: " + p1); 
+     System.out.println("P2 EXISTS: " + p2); 
+     */
     battle.playPokemonBattle(); 
     //System.out.println("Battle between " + p1.getNickName() + " and " + p2.getNickName() + ", start! \n" 
-      //                   + battle.playPokemonBattle(p1, p2).getNickName() + " wins!"); 
+    //                   + battle.playPokemonBattle(p1, p2).getNickName() + " wins!"); 
     //System.out.println("QQQQQQQQQQQQQQQQQQQQQQQQQ"); 
-     //System.out.println("TEMP POST BATTLE: "+ tempBuggle);
-     //System.out.println("YYYYYYYYYYYYY"); 
+    //System.out.println("TEMP POST BATTLE: "+ tempPoke);
+    //System.out.println("YYYYYYYYYYYYY"); 
     //maybe have to save the orig stats into another string variable since if the character wins (we play before), then don't show the stats increase until later.
     
     battleLog = battle.getAttackStat(); 
     battleLength = battleLog.size(); 
-     System.out.println("TEMP POST BATTLE: "+ tempBuggle);
+    System.out.println("TEMP POST BATTLE: "+ tempPoke);
     //System.out.println(battleLog.dequeue()); 
   }
   
   //draws a professor sprite that's boxed in by walls (therefore, the 
   //player can't move on top of the professor)
   public void createStadium(Graphics g, int width, int height) { 
-    //Randomizer rand = new Randomizer();
-    //int x = rand.intBetween(2, width);
-    //int y = rand.intBetween(2, height);
-    
     int x = 5; 
     int y = 8; 
-    
-    
     
     //cages in the professor
     verticalWalls[x][y-1] = true;
@@ -905,15 +938,18 @@ public class BuggleWorld extends BuggleWorld
       horizontalWalls[x-2-i][y-2-i] = true; 
       horizontalWalls[x+i][y-2-i] = true; 
     }
-    //Buggle prof = new Buggle(); 
+    //Poke prof = new Poke(); 
     grid.paint(); 
-    prof= new Buggle(p2);
-    Location profLoc = new Location (x,y); 
-    prof.setPosition(profLoc); 
-    
-    //set up the battle
-    
-    
+    try { 
+      Random rand = new Random(); 
+      //randomly chooses a prof image
+      Image sprite = ImageIO.read(new File("prof4.png"));
+      Image[] sprites = {sprite}; //prof doesn't turn and only uses one Image 
+      prof= new Poke(p2);
+      Location profLoc = new Location (x,y); 
+      prof.setPosition(profLoc); 
+    } catch (Exception e) { 
+    }
   }
   
   public void placeBagels(int bagels, int width, int height)
@@ -938,7 +974,7 @@ public class BuggleWorld extends BuggleWorld
     } else if (d == Direction.WEST) {
       return verticalWalls[p.x-1][p.y-1];
     } else {
-      throw new BuggleException("Shouldn't happen: wallInDirection");
+      throw new PokeException("Shouldn't happen: wallInDirection");
     }
   }
   
@@ -953,22 +989,22 @@ public class BuggleWorld extends BuggleWorld
     }
   }
   
-  void buggleChanged(Buggle b) {
-    debugPrintln("Calling drawCell from buggleChanged ");
+  void pokeChanged(Poke b) {
+    debugPrintln("Calling drawCell from pokeChanged ");
     grid.drawCell(b.position());
   }
   
-  public void buggleMoved(Buggle b, Location oldpos, Location newpos) {
+  public void pokeMoved(Poke b, Location oldpos, Location newpos) {
     // We have been informed that B has moved from oldpos to newpos.
-    // For multiple buggles, should move buggle to top!
-    debugPrintln("Calling drawCell (1) from buggleMoved");
+    // For multiple pokes, should move poke to top!
+    debugPrintln("Calling drawCell (1) from pokeMoved");
     grid.drawCell(oldpos);
-    debugPrintln("Calling drawCell (2) from buggleMoved");
+    debugPrintln("Calling drawCell (2) from pokeMoved");
     grid.drawCell(newpos);
   }
   
-  public void draw (Buggle b) {
-    debugPrintln("Draw buggle " + b);
+  public void draw (Poke b) {
+    debugPrintln("Draw poke " + b);
     debugPrintln("Position = " + nullify(b.position()));
     grid.draw(b);
     //repaint(); //****
@@ -991,23 +1027,26 @@ public class BuggleWorld extends BuggleWorld
     }
   }
   
-  protected int getBuggleDelay () { //[9/6/04]
-    return buggleDelay;
+  protected int getPokeDelay () { //[9/6/04]
+    return pokeDelay;
   }
   
-  private void setBuggleDelay (int i) { //[9/6/04]
-    buggleDelay = i; 
+  private void setPokeDelay (int i) { //[9/6/04]
+    pokeDelay = i; 
   }
+  
+  
+  
   
 }
 
 //**************************************************************************
-class BuggleGrid extends Canvas //{
+class PokeGrid extends Canvas //{
   implements MouseListener, MouseMotionListener { // ***
   
-  /* A rectangular area of the BuggleWorld applet that displays the state of the world */
+  /* A rectangular area of the PokeWorld applet that displays the state of the world */
   
-  public BuggleWorld world;
+  public PokeWorld world;
   // private Graphics gfx; // Graphics context of this grid
   private int cellWidth;
   private int cellHeight;
@@ -1032,7 +1071,7 @@ class BuggleGrid extends Canvas //{
     this.addMouseMotionListener(this); // ***
   }
   
-  public BuggleGrid(BuggleWorld bw) {
+  public PokeGrid(PokeWorld bw) {
     world = bw;
     // Note: do *not* call makeGrid() here, since Canvas has not yet been allocated real-estate on screen.
   }
@@ -1067,7 +1106,7 @@ class BuggleGrid extends Canvas //{
   }
   
   public void paintGrid() {
-    world.debugPrintln("BuggleGrid.paintGrid()");
+    world.debugPrintln("PokeGrid.paintGrid()");
     
     makeGrid();
     gfx = this.getGraphics();
@@ -1173,14 +1212,14 @@ class BuggleGrid extends Canvas //{
       }
     }
     
-    // Paint buggles 
-    Enumeration bugs = world.buggles.elements();
+    // Paint pokes 
+    Enumeration bugs = world.pokes.elements();
     while ( bugs.hasMoreElements() ) {
-      Buggle next = (Buggle) bugs.nextElement();
+      Poke next = (Poke) bugs.nextElement();
       this.draw(next);
     }
     // [9/6/04] Causes a painting loop!
-    // world.debugPrintln("calling repaint() from BuggleGrid.paintGrid()");
+    // world.debugPrintln("calling repaint() from PokeGrid.paintGrid()");
     // repaint(); //***** needed this ****
   }
   
@@ -1254,36 +1293,36 @@ class BuggleGrid extends Canvas //{
   
   
   public void paint() {
-    world.debugPrintln("BuggleGrid paint();");
+    world.debugPrintln("PokeGrid paint();");
     this.paint( gfx ); //this.getGraphics()
   }
   
   public void paint( Graphics g ) {
     
     // super.paint(g); //****?? paintComponent??
-    world.debugPrintln("BuggleGrid paint(Graphics g);");
+    world.debugPrintln("PokeGrid paint(Graphics g);");
     paintGrid();
     // System.out.println("Start Paint");
     // resize();
     // Paint floor:
-    //System.out.println("Begin printing all buggles.");
-    Enumeration bugs = world.buggles.elements();
-    //System.out.println("Begin printing all buggles1.");
+    //System.out.println("Begin printing all pokes.");
+    Enumeration bugs = world.pokes.elements();
+    //System.out.println("Begin printing all pokes1.");
     while (bugs.hasMoreElements()) {
-      //System.out.println("Begin printing all buggles2.");
-      Buggle b = (Buggle) bugs.nextElement();
-      //System.out.println("Begin printing all buggles3.");
-      world.debugPrintln("Calling drawBuggle from BuggleGrid.paint(Graphics g)");
+      //System.out.println("Begin printing all pokes2.");
+      Poke b = (Poke) bugs.nextElement();
+      //System.out.println("Begin printing all pokes3.");
+      world.debugPrintln("Calling drawPoke from PokeGrid.paint(Graphics g)");
       this.draw(b);
     }
-    //System.out.println("End printing all buggles.");
+    //System.out.println("End printing all pokes.");
     // System.out.println("Stop Paint");
   }
   
-  public void draw( Buggle b ) {
-    //System.out.println("Draw buggle " + b);
+  public void draw( Poke b ) {
+    //System.out.println("Draw poke " + b);
     //System.out.println("Position = " + nullify(b.position()));
-    world.debugPrintln("Calling drawCell from draw(Buggle)");
+    world.debugPrintln("Calling drawCell from draw(Poke)");
     
     drawCell(b.position());
   }
@@ -1320,8 +1359,8 @@ class BuggleGrid extends Canvas //{
        gfx.setPaintMode();
        gfx.fillRect(r.x, r.y, r.width, r.height);
        */
-      // Draw any buggles in this cell
-      drawBugglesAt(p);
+      // Draw any pokes in this cell
+      drawPokesAt(p);
       
       // Redraw any walls adjoining this cell
       if (world.horizontalWalls[p.x-1][p.y-1]) {
@@ -1409,18 +1448,18 @@ class BuggleGrid extends Canvas //{
     gfx.drawString(s, stringX, stringY);
   }
   
-  public void drawBugglesAt (Location p) {
-    // System.out.println("drawBugglesAt " + p);
-    // System.out.println("buggles = " + nullify(world.buggles));
-    /*for (int i = world.buggles.size() - 1; i >= 0; i--) { 
-     Buggle b = (Buggle) world.buggles.elementAt(i);
+  public void drawPokesAt (Location p) {
+    // System.out.println("drawPokesAt " + p);
+    // System.out.println("pokes = " + nullify(world.pokes));
+    /*for (int i = world.pokes.size() - 1; i >= 0; i--) { 
+     Poke b = (Poke) world.pokes.elementAt(i);
      if (b.getPosition().equals(p)) 
      b.drawInRect(this.getGraphics(), cellRectangle(p));
      break;
      }*/
-    // Draw all buggles at current position.
-    for (int i = 0; i < world.buggles.size(); i++) { 
-      Buggle b = (Buggle) world.buggles.elementAt(i);
+    // Draw all pokes at current position.
+    for (int i = 0; i < world.pokes.size(); i++) { 
+      Poke b = (Poke) world.pokes.elementAt(i);
       if (b.position().equals(p)) 
         b.drawInRect( //this.getGraphics(),
                      gfx, 
@@ -1564,15 +1603,15 @@ class BuggleGrid extends Canvas //{
 }
 
 //**************************************************************************
-class BuggleExecuter {
-  // Control the executiong of buggles. Allow buggles to be stepped,
+class PokeExecuter {
+  // Control the executiong of pokes. Allow pokes to be stepped,
   // be run until explicitly paused, or be reset. 
   
-  private BuggleRunner runner;   // Encapsulates running into object suitable for thread. 
+  private PokeRunner runner;   // Encapsulates running into object suitable for thread. 
   // Make only one of these.
   private Thread thread; // Make new thread every time reset.
   //private javax.swing.Timer timer; // **** Make new thread every time reset.
-  private BuggleWorld world; 
+  private PokeWorld world; 
   private boolean stepMode = false;
   private boolean isFirstSteppedInstruction = true;
   private String currentInstruction;
@@ -1584,9 +1623,9 @@ class BuggleExecuter {
   private static final int DELAY = 30; // ****
   private static boolean execDebug = false;
   
-  public BuggleExecuter(BuggleWorld w) {
+  public PokeExecuter(PokeWorld w) {
     world = w;
-    runner = new BuggleRunner(w);
+    runner = new PokeRunner(w);
     init();
   }
   
@@ -1611,7 +1650,7 @@ class BuggleExecuter {
   
   public void run() {
     world.debugPrintln("run()");
-    // Run buggles until done or sent an explicit stop message.
+    // Run pokes until done or sent an explicit stop message.
     stepMode = false;
     execDebugPrintln("run: set stepMode to false");
     go();
@@ -1640,11 +1679,11 @@ class BuggleExecuter {
       execDebugPrintln("go: resuming thread");
       state = RUNNING;
       execDebugPrintln("go: state set to RUNNING");
-      thread.resume(); // [9/6/04] Schedules buggle thread to run again (but doesn't run yet).
+      thread.resume(); // [9/6/04] Schedules poke thread to run again (but doesn't run yet).
       execDebugPrintln("go: after resuming thread");
     } else {
       // Already running or yielded -- ignore. 
-      // System.out.println("Buggle Execution Error -- unexpected state in go(): " + stateString());
+      // System.out.println("Poke Execution Error -- unexpected state in go(): " + stateString());
     }
   }
   
@@ -1683,7 +1722,7 @@ class BuggleExecuter {
   }
   
   public void waitIfNecessary(String instruction) {
-    // Buggles call this method when about to perform the next primitive.
+    // Pokes call this method when about to perform the next primitive.
     // Message is a string documenting what the next primitive is. 
     
     // This is the only method that the thread being controlled by the
@@ -1694,7 +1733,7 @@ class BuggleExecuter {
     // If in step mode, wait until next step is indicated. 
     // First instruction needs to be treated specially. 
     execDebugPrintln("waitIfNecessary: " + instruction);
-    int delay = world.getBuggleDelay();
+    int delay = world.getPokeDelay();
     if (delay > 0) {
       try {
         Thread.sleep(delay);
@@ -1702,7 +1741,7 @@ class BuggleExecuter {
       }
     }
     if (state != RUNNING) { // [9/6/04]
-      // Don't do anything special -- buggle routines were called during initialization.
+      // Don't do anything special -- poke routines were called during initialization.
       execDebugPrintln("waitIfNecessary: called when not running");
     } else {
       if (stepMode) {
@@ -1751,14 +1790,14 @@ class BuggleExecuter {
 }
 
 //**************************************************************************
-class BuggleRunner implements Runnable {
-  /* A way to encapsulate the behavior of the buggles into a thread-like object */
+class PokeRunner implements Runnable {
+  /* A way to encapsulate the behavior of the pokes into a thread-like object */
   
-  private BuggleWorld world;
+  private PokeWorld world;
   private boolean done = false;
   
-  public BuggleRunner(BuggleWorld w) {
-    // System.out.println("new Buggle(runner)");
+  public PokeRunner(PokeWorld w) {
+    // System.out.println("new Poke(runner)");
     world = w;
   }
   
@@ -1780,84 +1819,82 @@ class BuggleRunner implements Runnable {
 }
 
 //**************************************************************************
-class Buggle {
+class Poke {
   
-  // Although buggles are normally presented as having four pieces of state
+  // Although pokes are normally presented as having four pieces of state
   // (position, heading, color, and brush state), there is an important
-  // fifth piece of state: the BuggleWorld in which the buggle lives. 
+  // fifth piece of state: the PokeWorld in which the poke lives. 
   // 
-  // There may be multiple BuggleWorlds in existence at any one time;
-  // how does a buggle know which one to live in? There are two ways:
+  // There may be multiple PokeWorlds in existence at any one time;
+  // how does a poke know which one to live in? There are two ways:
   // 
-  // (1) A BuggleWorld instance can be explicitly provided to the Buggle constructor.
+  // (1) A PokeWorld instance can be explicitly provided to the Poke constructor.
   //     But since the world is not advertised as a piece of state, most
   //     users won't know about this option. 
   // 
-  // (2) If no BuggleWorld instance is explicitly provided to the Buggle constructor,
-  //     it implicitly uses the currently "active" BuggleWorld, which is the
+  // (2) If no PokeWorld instance is explicitly provided to the Poke constructor,
+  //     it implicitly uses the currently "active" PokeWorld, which is the
   //     one in which one of the following two actions has most recently occurred:
-  //     1) The BuggleWorld has been created
-  //     2) A menu item has been pressed in the BuggleWorld. 
-  //     The class variable BuggleWorld.currentWorld holds the currently active
-  //     instance of BuggleWorld. 
+  //     1) The PokeWorld has been created
+  //     2) A menu item has been pressed in the PokeWorld. 
+  //     The class variable PokeWorld.currentWorld holds the currently active
+  //     instance of PokeWorld. 
   
   private char direction = 's'; 
-  private BuggleWorld world;  // The world to which the Buggle belongs.
-  private Location position;   // Location of the Buggle
+  private PokeWorld world;  // The world to which the Poke belongs.
+  private Location position;   // Location of the Poke
   private static final int _defaultX = 1;
   private static final int _defaultY = 1;
   
   //KARINA EDITS 12/4/13
-  private Pokemon you; 
-  
-  
+  private Pokemon yourPokemon; 
   
   private Direction heading;
-  private Color color;       // Color of the Buggle.
+  private Color color;       // Color of the Poke.
   private boolean trailmode = true;
   private static final boolean _defaultTrailmode = true;
   private static final Color _defaultColor = Color.red;
-  private static final Color selectedBuggleOutlineColor = Color.black;
-  private static final Color unselectedBuggleOutlineColor = Color.white;
-  // private static final int inset = 3; // Number of pixels by which drawn buggle is inset from cell edge
-  private static final double insetFactor = 0.05; // Factor by which drawn buggle is inset from cell
-  private BuggleExecuter exec;
+  private static final Color selectedPokeOutlineColor = Color.black;
+  private static final Color unselectedPokeOutlineColor = Color.white;
+  // private static final int inset = 3; // Number of pixels by which drawn poke is inset from cell edge
+  private static final double insetFactor = 0.05; // Factor by which drawn poke is inset from cell
+  private PokeExecuter exec;
   
-  public Buggle(Pokemon buddy) {
-    this(_defaultColor, _defaultX, _defaultY, BuggleWorld.currentWorld);
+  public Poke(Pokemon buddy) {
+    this(_defaultColor, _defaultX, _defaultY, PokeWorld.currentWorld);
     //KARINA EDIT 12/4/13
-    you= buddy;
+    yourPokemon= buddy;
   }
   
-  public Buggle(String buggleName, String buggleNickName, String yourName) {
-    this(_defaultColor, _defaultX, _defaultY, BuggleWorld.currentWorld);
-    //KARINA EDIT 12/4/13
-    you= new Pokemon(buggleName, buggleNickName, yourName);
-  }
+  /*  public Poke(String pokeName, String pokeNickName, String yourName) {
+   this(_defaultColor, _defaultX, _defaultY, PokeWorld.currentWorld);
+   //KARINA EDIT 12/4/13
+   you= new Pokemon(pokeName, pokeNickName, yourName);
+   }
+   
+   public Poke(String pokeName, String pokeNickName, String yourName, 
+   int hp, int atk, int spd) {
+   this(_defaultColor, _defaultX, _defaultY, PokeWorld.currentWorld);
+   //KARINA EDIT 12/4/13
+   you= new Pokemon(pokeName, pokeNickName, yourName, hp, atk, spd);
+   }
+   */
   
-  public Buggle(String buggleName, String buggleNickName, String yourName, 
-                int hp, int atk, int spd) {
-    this(_defaultColor, _defaultX, _defaultY, BuggleWorld.currentWorld);
-    //KARINA EDIT 12/4/13
-    you= new Pokemon(buggleName, buggleNickName, yourName, hp, atk, spd);
-  }
   
-  
-  
-  public Buggle (BuggleWorld w) {
+  public Poke (PokeWorld w) {
     this(_defaultColor, _defaultX, _defaultY, w);
   }
   
-  public Buggle(int x, int y) {
-    this(_defaultColor, x, y, BuggleWorld.currentWorld);
+  public Poke(int x, int y) {
+    this(_defaultColor, x, y, PokeWorld.currentWorld);
   }
   
-  public Buggle(Color c) {
-    this(c, _defaultX, _defaultY, BuggleWorld.currentWorld);
+  public Poke(Color c) {
+    this(c, _defaultX, _defaultY, PokeWorld.currentWorld);
   }
   
-  public Buggle(Color c, int x, int y, BuggleWorld w) {
-    //  System.out.println ("New Buggle.");
+  public Poke(Color c, int x, int y, PokeWorld w) {
+    //  System.out.println ("New Poke.");
     color = c;
     position = new Location(x, y);
     heading = Direction.EAST;
@@ -1865,16 +1902,16 @@ class Buggle {
     world = w; 
     //System.out.println ("Getting world.");
     if (world == null) 
-      throw new BuggleException("BuggleWorld of newly created buggle is null!");
+      throw new PokeException("PokeWorld of newly created poke is null!");
     else {
       //System.out.println ("Adding robot to world" + world);
     }
     exec = world.exec; // Cache executer locally. 
-    exec.waitIfNecessary("new Buggle()");
-    // Careful! Must select buggle before adding it 
+    exec.waitIfNecessary("new Poke()");
+    // Careful! Must select poke before adding it 
     // (which will try to draw it, and may complain if not selected).
-    world.selectBuggle(this);
-    //System.out.println("This buggle = " + this );
+    world.selectPoke(this);
+    //System.out.println("This poke = " + this );
     world.add(this);
   }
   
@@ -1882,7 +1919,7 @@ class Buggle {
   //KARINA EDIT 12/4/13
   public Pokemon getBPokemon(){
     System.out.println("OOO");
-    return you;
+    return yourPokemon;
   }
   
   //EDITED BY KARINA- TRYING TO GET THE POKEMON
@@ -1911,7 +1948,7 @@ class Buggle {
   }
   
   // [lyn, 9/2/07] eastStep() is the underlying primitive used by right() and forward(n)
-  //moves the buggle east
+  //moves the poke east
   public void eastStep() throws MoveException {
     if (world.wallInDirection(position, heading))
       throw new MoveException("");
@@ -1919,11 +1956,11 @@ class Buggle {
     //world.markTrail(position, color);
     Location oldPosition = position;
     position = world.addCoordinates(position, heading.toLocation());
-    world.buggleMoved(this, oldPosition, position);
+    world.pokeMoved(this, oldPosition, position);
   }
   
   public Color getCellColor() {
-    // Return the color in the cell under the buggle. 
+    // Return the color in the cell under the poke. 
     exec.waitIfNecessary("getCellColor()");
     return world.markColorAt(position); // [lyn, 11/11/06] Now guaranteed to return color, never null
   }
@@ -1938,19 +1975,19 @@ class Buggle {
   }
   
   // [lyn, 9/2/07] westStep() is the underlying primitive used by left() and backward(n)
-  //changed the way Buggles handle going backwards (instead of changing heading, just
-  //hardcoded everything to be opposite) b/c otherwise the Buggle would flip
+  //changed the way Pokes handle going backwards (instead of changing heading, just
+  //hardcoded everything to be opposite) b/c otherwise the Poke would flip
   public void westStep() throws MoveException {
     //heading = heading.opposite();
     if (world.wallInDirection(position, heading.opposite())) 
       throw new MoveException("");
-//      throw new BuggleException("BACKWARD: Can't move through wall!");
+//      throw new PokeException("BACKWARD: Can't move through wall!");
     //if (trailmode)
     //world.markTrail(position, color);
     Location oldPosition = position;
     position = world.addCoordinates(position, heading.opposite().toLocation());
     //heading = heading.opposite();
-    world.buggleMoved(this, oldPosition, position);
+    world.pokeMoved(this, oldPosition, position);
   }
   
   public Location getPosition () {
@@ -1970,11 +2007,11 @@ class Buggle {
     exec.waitIfNecessary("setPosition(" + world.locationString(p) + ")");
     // [lyn, 9/1/07] Added check that position is legal 
     if (! world.isLocationInGrid(p)) {
-      throw new BuggleException("SETPOSITION: Location not in grid -- " + p);
+      throw new PokeException("SETPOSITION: Location not in grid -- " + p);
     } else {
       Location oldPosition = position;
       position = p; 
-      world.buggleMoved(this,oldPosition,position);
+      world.pokeMoved(this,oldPosition,position);
     }
   }
   
@@ -1988,7 +2025,7 @@ class Buggle {
     //System.out.println("position();");
     exec.waitIfNecessary("setHeading()");
     heading = d; 
-    world.buggleChanged(this);
+    world.pokeChanged(this);
   }
   
   public void up() throws MoveException {
@@ -2000,10 +2037,10 @@ class Buggle {
     //world.markTrail(position, color);
     Location oldPosition = position;
     position = world.addCoordinates(position, heading.left().toLocation());
-    world.buggleMoved(this, oldPosition, position);
+    world.pokeMoved(this, oldPosition, position);
 //    exec.waitIfNecessary("up()");
 //    heading = heading.up();
-//    world.buggleChanged(this);
+//    world.pokeChanged(this);
   }
   
   public void down() throws MoveException {
@@ -2014,7 +2051,7 @@ class Buggle {
     //world.markTrail(position, color);
     Location oldPosition = position;
     position = world.addCoordinates(position, heading.right().toLocation());
-    world.buggleMoved(this, oldPosition, position);
+    world.pokeMoved(this, oldPosition, position);
     //System.out.println("down();");
   }
   
@@ -2033,7 +2070,7 @@ class Buggle {
   public void pickUpBagel () {
     exec.waitIfNecessary("pickUpBagel()");
     if (! world.isBagelAt(position)) 
-      throw new BuggleException("pickUpBagel: no bagel to pick up!");
+      throw new PokeException("pickUpBagel: no bagel to pick up!");
     world.removeBagel(position);
     // Handled by removeBagel.
     // cellChanged(position);
@@ -2042,7 +2079,7 @@ class Buggle {
   public void dropBagel () {
     exec.waitIfNecessary("dropBagel()");
     if (world.isBagelAt(position)) 
-      throw new BuggleException("dropBagel: already a bagel in this cell!");
+      throw new PokeException("dropBagel: already a bagel in this cell!");
     world.addBagel(position);
     // Handled by removeBagel.
     // cellChanged(position);
@@ -2097,21 +2134,22 @@ class Buggle {
     g.setPaintMode();
     g.setColor(color);
     try { 
-      if (direction=='n') { 
-        Image sprite = ImageIO.read(new File("pikan.png"));
-        g.drawImage(sprite, p1.x, p1.y, world); 
+      if (direction=='s') { 
+        System.out.println(yourPokemon.getTrainer() + " is trying to be seen"); 
+        g.drawImage(yourPokemon.getSprites()[0], p1.x, p1.y, world); 
       } else if (direction=='w') { 
-        Image sprite = ImageIO.read(new File("pikaw.png"));
-        g.drawImage(sprite, p1.x, p1.y, world); 
+        g.drawImage(yourPokemon.getSprites()[1], p1.x, p1.y, world); 
       } else if (direction=='e') { 
-        Image sprite = ImageIO.read(new File("pikae.png"));
-        g.drawImage(sprite, p1.x, p1.y, world); 
-      } else if (direction=='s') { 
-        Image sprite = ImageIO.read(new File("pikas.png"));
-        g.drawImage(sprite, p1.x, p1.y, world); 
+        g.drawImage(yourPokemon.getSprites()[2], p1.x, p1.y, world); 
+      } else if (direction=='n') { 
+        g.drawImage(yourPokemon.getSprites()[3], p1.x, p1.y, world); 
       }
       
     } catch (Exception e) { 
+      System.out.println(e); 
+//      System.out.println(yourPokemon.getTrainer()); 
+//      System.out.println(yourPokemon.getSprites()[0]); 
+      System.out.println("I HATECHU SO MUCH WOW SUCH PROGRAM HATE"); 
     }
   }
 }
@@ -2168,9 +2206,9 @@ class Direction {
 }
 
 //**************************************************************************
-// [lyn, 8/22/07] New class for immutable points. BuggleWorld
+// [lyn, 8/22/07] New class for immutable points. PokeWorld
 //   now uses these rather than the mutable Point class to 
-//   avoid some knotty Buggle contract issues with immutable points. 
+//   avoid some knotty Poke contract issues with immutable points. 
 
 class Location {
   
@@ -2217,9 +2255,9 @@ class Location {
 }
 
 //**************************************************************************
-class BuggleException extends RuntimeException {
+class PokeException extends RuntimeException {
   
-  public BuggleException (String msg) {
+  public PokeException (String msg) {
     super(msg);
   }
   
