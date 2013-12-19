@@ -286,7 +286,7 @@ public class PokeWorld extends JApplet //extends BuggleWorld
     //placeBagels(1, 9, 9);
     System.out.println("3"); 
     initBattle(); 
-    scrollText.setText("You are in "+p2.getTrainer()+"'s classroom! \nPress A to interact.\n");
+    scrollText.setText("You are in "+p2.getTrainer()+"'s classroom! \nPress A to interact.\nPress B for instructions.\n");
     //scrollText.setText(scrollText.getText()+ "Your professor is "+ p2.getTrainer() +"!");
     System.out.println("4"); 
     exec.reset();
@@ -502,7 +502,7 @@ public class PokeWorld extends JApplet //extends BuggleWorld
        
         scrollText.setText("How to play:\n1. Go up to the professor and battle by pressing A.\n2. Your health will "+
       "decrease by 50% if you lose. If you win, your attack and your health stats will go up!\n\n******WHEN YOU WIN, GO TO THE PORTAL AND PRESS A TO GO TO THE NEXT PROFESSOR"+
-                           "*******");
+                           "*******\n\n");
         
       }
     } else if (arg.equals("A")) { 
