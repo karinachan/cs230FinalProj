@@ -242,7 +242,7 @@ public class PokeWorld extends JApplet //extends BuggleWorld
         Image sprite4 = ImageIO.read(new File("pikan.png"));
         Image[] sprites = {sprite1, sprite2, sprite3, sprite4}; 
         
-        p1 = new Pokemon("Pikachu","Pika", username, 100, 100, 100, sprites);
+        p1 = new Pokemon("Pikachu","Pika", username, 250, 100, 100, sprites);
         
         
       }
@@ -499,10 +499,10 @@ public class PokeWorld extends JApplet //extends BuggleWorld
         //12/4/13
       } else { 
         //scrollText.setText("YOU ARE:"+ selectedPoke().getBPokemon() + "\n");
-        System.out.println("TEMP POST BATTLE: "+ tempPoke);
-        System.out.println("p1:" + p1);
-        System.out.println("temp:"+tempPoke);
-        scrollText.setText("YOU ARE:"+ tempPoke + "\n");
+       
+        scrollText.setText("How to play:\n1. Go up to the professor and battle by pressing A.\n2. Your health will "+
+      "decrease by 50% if you lose. If you win, your attack and your health stats will go up!\n\n******WHEN YOU WIN, GO TO THE PORTAL AND PRESS A TO GO TO THE NEXT PROFESSOR"+
+                           "*******");
         
       }
     } else if (arg.equals("A")) { 
