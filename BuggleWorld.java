@@ -2293,149 +2293,150 @@ class Buggle {
   
 }
 
-//**************************************************************************
-class Direction {
-  
-  private int dir;
-  
-  public static final Direction NORTH = new Direction(0);
-  public static final Direction EAST = new Direction(1);
-  public static final Direction SOUTH = new Direction(2);
-  public static final Direction WEST = new Direction(3);
-  
-  private static final Location northLoc = new Location(0,1);
-  private static final Location eastLoc = new Location(1, 0);
-  private static final Location southLoc = new Location(0, -1);
-  private static final Location westLoc = new Location(-1, 0);
-  
-  private static final Direction[] rights = {EAST, SOUTH, WEST, NORTH};
-  private static final Direction[] lefts = {WEST, NORTH, EAST, SOUTH};
-  private static final Direction[] opposites = {SOUTH, WEST, NORTH, EAST};
-  private static final Location[] locations = {northLoc, eastLoc, southLoc, westLoc};
-  private static final String[] strings = {"NORTH", "EAST", "SOUTH", "WEST"};
-  
-  private Direction(int d) {
-    dir = d;
-  }
-  
-  public boolean equals (Direction d) {
-    return dir == d.dir;
-  }
-  
-  // Carefully define the following so that == works as well as .equals
-  public Direction right() {
-    return rights[dir];
-    /* if this == NORTH
-       return EAST;
-       else if this == EAST
-       return SOUTH;
-       else if this == SOUTH
-       return WEST;
-       else if this == WEST
-       return NORTH; */
-  }
-  
-  public Direction left() {
-    return lefts[dir];
-    /*
-      if this == NORTH
-      return WEST;
-      else if this == EAST
-      return NORTH;
-      else if this == SOUTH
-      return EAST;
-      else if this == WEST
-      return SOUTH;
-    */
-  }
-  
-  public Direction opposite() {
-    return opposites[dir];
-  }
-  
-  public Location toLocation() {
-    return locations[dir];
-  }
-  
-  public String toString () {
-    return strings[dir];
-    /*
-      if (dir == 0)
-      return "NORTH";
-      else if (dir == 1)
-      return "EAST";
-      else if (dir == 2)
-      return "SOUTH";
-      else if (dir == 3)
-      return "WEST";
-      else
-      return "Unknown direction";
-    */
-  } 
-}
 
-//**************************************************************************
-// [lyn, 7/18/07] Added the add method.
-// [lyn, 8/22/07] New class for immutable points. BuggleWorld
-//   now uses these rather than the mutable Point class to 
-//   avoid some knotty Buggle contract issues with immutable points. 
-
-class Location {
-  
-  // Immutable (really, write-once) instance variables
-  public final int x; 
-  public final int y; 
-  
-  // Constructor method
-  public Location(int initx, int inity) {
-    x = initx;
-    y = inity;
-  }
-
-  // Instance methods
-  
-  public boolean equals (Object obj) {
-    if (obj instanceof Location) {
-      Location loc = (Location) obj;
-      return (x == loc.x) && (y == loc.y);
-    } else {
-      return false;
-    }
-  }
-
-  public Point toPoint () {
-    return new Point(x,y); 
-  }
-  
-  // Displaying as a string: 
-  public String toString() {
-    return "Location(x=" + x + ",y=" + y + ")";
-  }
-
-  // Returns a new location that sums the respective components of 
-  // loc and this location. 
-  public Location add (Location loc) {
-    return new Location (this.x + loc.x, this.y + loc.y);
-  }
-
-  // Class methods
-
-  public Location fromPoint (Point p) {
-    return new Location(p.x, p.y); 
-  }
-
-  public Point toPoint (Location loc) {
-    return new Point(loc.x, loc.y); 
-  }
-  
-}
-
-//**************************************************************************
-class BuggleException extends RuntimeException {
-  
-  public BuggleException (String msg) {
-    super(msg);
-  }
-  
-}
-
+//
+////**************************************************************************
+//class Direction {
+//  
+//  private int dir;
+//  
+//  public static final Direction NORTH = new Direction(0);
+//  public static final Direction EAST = new Direction(1);
+//  public static final Direction SOUTH = new Direction(2);
+//  public static final Direction WEST = new Direction(3);
+//  
+//  private static final Location northLoc = new Location(0,1);
+//  private static final Location eastLoc = new Location(1, 0);
+//  private static final Location southLoc = new Location(0, -1);
+//  private static final Location westLoc = new Location(-1, 0);
+//  
+//  private static final Direction[] rights = {EAST, SOUTH, WEST, NORTH};
+//  private static final Direction[] lefts = {WEST, NORTH, EAST, SOUTH};
+//  private static final Direction[] opposites = {SOUTH, WEST, NORTH, EAST};
+//  private static final Location[] locations = {northLoc, eastLoc, southLoc, westLoc};
+//  private static final String[] strings = {"NORTH", "EAST", "SOUTH", "WEST"};
+//  
+//  private Direction(int d) {
+//    dir = d;
+//  }
+//  
+//  public boolean equals (Direction d) {
+//    return dir == d.dir;
+//  }
+//  
+//  // Carefully define the following so that == works as well as .equals
+//  public Direction right() {
+//    return rights[dir];
+//    /* if this == NORTH
+//       return EAST;
+//       else if this == EAST
+//       return SOUTH;
+//       else if this == SOUTH
+//       return WEST;
+//       else if this == WEST
+//       return NORTH; */
+//  }
+//  
+//  public Direction left() {
+//    return lefts[dir];
+//    /*
+//      if this == NORTH
+//      return WEST;
+//      else if this == EAST
+//      return NORTH;
+//      else if this == SOUTH
+//      return EAST;
+//      else if this == WEST
+//      return SOUTH;
+//    */
+//  }
+//  
+//  public Direction opposite() {
+//    return opposites[dir];
+//  }
+//  
+//  public Location toLocation() {
+//    return locations[dir];
+//  }
+//  
+//  public String toString () {
+//    return strings[dir];
+//    /*
+//      if (dir == 0)
+//      return "NORTH";
+//      else if (dir == 1)
+//      return "EAST";
+//      else if (dir == 2)
+//      return "SOUTH";
+//      else if (dir == 3)
+//      return "WEST";
+//      else
+//      return "Unknown direction";
+//    */
+//  } 
+//}
+//
+////**************************************************************************
+//// [lyn, 7/18/07] Added the add method.
+//// [lyn, 8/22/07] New class for immutable points. BuggleWorld
+////   now uses these rather than the mutable Point class to 
+////   avoid some knotty Buggle contract issues with immutable points. 
+//
+//class Location {
+//  
+//  // Immutable (really, write-once) instance variables
+//  public final int x; 
+//  public final int y; 
+//  
+//  // Constructor method
+//  public Location(int initx, int inity) {
+//    x = initx;
+//    y = inity;
+//  }
+//
+//  // Instance methods
+//  
+//  public boolean equals (Object obj) {
+//    if (obj instanceof Location) {
+//      Location loc = (Location) obj;
+//      return (x == loc.x) && (y == loc.y);
+//    } else {
+//      return false;
+//    }
+//  }
+//
+//  public Point toPoint () {
+//    return new Point(x,y); 
+//  }
+//  
+//  // Displaying as a string: 
+//  public String toString() {
+//    return "Location(x=" + x + ",y=" + y + ")";
+//  }
+//
+//  // Returns a new location that sums the respective components of 
+//  // loc and this location. 
+//  public Location add (Location loc) {
+//    return new Location (this.x + loc.x, this.y + loc.y);
+//  }
+//
+//  // Class methods
+//
+//  public Location fromPoint (Point p) {
+//    return new Location(p.x, p.y); 
+//  }
+//
+//  public Point toPoint (Location loc) {
+//    return new Point(loc.x, loc.y); 
+//  }
+//  
+//}
+//
+////**************************************************************************
+//class BuggleException extends RuntimeException {
+//  
+//  public BuggleException (String msg) {
+//    super(msg);
+//  }
+//  
+//}
