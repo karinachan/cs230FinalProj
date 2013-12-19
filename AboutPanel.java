@@ -1,3 +1,10 @@
+/** Karina Chan and Laura Zeng
+  * CS 230 
+  * Final Project
+  * AboutPanel.java
+  * 
+  * Creates the "About Us" panel for our PokeWorld GUI. 
+  */
 
 import java.awt.*;
 import java.awt.event.*; 
@@ -8,107 +15,40 @@ import javax.swing.border.*;
 public class AboutPanel extends JPanel {
   
   public JPanel aboutPanel; 
-  private JButton aboutback;
-  
-  
-  
+  private JButton aboutBack;
   
   public AboutPanel(){
     setLayout(new FlowLayout()); //sets the layout to border layout
     setBackground (new Color (255, 255, 255)); //sets the color background
     
     //creates labels with text on them
-    JLabel l1 = new JLabel ("<html> <strong> ABOUT:</strong><br>"
+    JLabel title = new JLabel ("<html> <strong> ABOUT:</strong><br>"
                               +"<br>------------------------<br>Created by Karina Chan and Laura Zeng");
-    l1.setFont(new Font("Rockwell", Font.PLAIN, 16));
-   
-    JLabel l2 = new JLabel ("------------------------");
-    JLabel l3 = new JLabel ("About US; we are narcissists and g00d spellerz");
-   
-    //adds labels and a picture
-    add (l1);
-    //add(new JSeparator (JSeparator.VERTICAL), BorderLayout.LINE_START);
+    title.setFont(new Font("Rockwell", Font.PLAIN, 16));    
+//    JLabel divider = new JLabel ("------------------------");
+//    JLabel aboutText = new JLabel ("About US; we are narcissists and g00d spellerz");
     
+    //adds labels and a picture
+    add(title);    
     JLabel picLabel = new JLabel("<html><img src='http://bit.ly/1bgeVvc'></html>");
     add (picLabel,BorderLayout.LINE_END);
     picLabel.setBorder(new EmptyBorder( 0, 0, 0, 50 ) );
-    //System.out.println("HERE");
-    
-    /*aboutPanel = new JPanel(new FlowLayout());
-    JLabel hi2= new JLabel("CABBAGE");
-    
-    aboutPanel.add(hi2); 
-    aboutback = new JButton ("Back"); 
-    
-    //aboutback.addActionListener(new ButtonListener(aboutback)); 
-    aboutPanel.add(aboutback);
-    //aboutPanel.setVisible(false); //hidden until pressed
-    
-    //add(aboutPanel);
-    */
   }
   
+  /** 
+   * returns the AboutPanel
+   * @return JPanel
+   */
   public JPanel getPanel(){
     return aboutPanel;
   }
   
-   public JButton getButton(){
-     return aboutback;
-   }
-  
-   /*
-  private class ButtonListener implements ActionListener {
-    
-    
-    
-    private JButton set;
-    private LayoutPanel layout;
-    
-    public ButtonListener(JButton button){
-      
-      set=button;
-    }
-    
-    
-    
-    public void actionPerformed(ActionEvent event){
-      //FOR THE ADD SCHOOL BUTTON
-      if (event.getSource()==set){
-        layout.getPanel().setVisible(true);
-        aboutPanel.setVisible(false);
-        
-        
-        
-      } 
-      
-      
-    }
+  /**
+   * returns the aboutBack button
+   * @return aboutBack
+   */
+  public JButton getButton(){
+    return aboutBack;
   }
-  
-  public static void main(String args[]){
-    JFrame frame = new JFrame ("Test");
-    frame.setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);    
-    frame.setSize(new Dimension(500,400)); 
-    
-    
-    AboutPanel panel = new AboutPanel();
-    JPanel aboutP= panel.getPanel();
-    aboutP.setVisible(true);
-    frame.getContentPane().add(panel.aboutPanel);
-    
-    
-    //adds each individual panel on to the pane
-    
-    
-    
-    
-    
-    
-//      frame.pack();
-    frame.setVisible(true);
-    frame.setResizable(false);
-    
-  }
-  */
-  
 }
+  
