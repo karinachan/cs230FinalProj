@@ -88,7 +88,7 @@ public class PokemonBattle {
       }
       resultBattle(p2);
     } else { //when you've won...
-      battleStatus= "You've beaten my class already!\n To the next one!"; 
+      battleStatus= "You've beaten my class already!\n Through the red door to the next one!"; 
       winner=p1;
     }
   }
@@ -119,7 +119,7 @@ public class PokemonBattle {
       attackStats.enqueue(p1.getNickName() + "'s base attack has increased to " + p1.getATK() + "!\n"); 
       attackStats.enqueue(p1.getNickName() + "'s HP has increased to " + p1.getHP() + "!\n"); 
       p1.setHP(origHP+rand.nextInt(30)); //hp increases at a random value between (0-30)
-      battleStatus= "You've beaten "+ p2.getTrainer()+"'s class! To the next professor!";
+      battleStatus= "You've beaten "+ p2.getTrainer()+"'s class! Through the red door to the next professor!";
       hasWonYet=true;
     } else {
       p1.setHP(origHP/2); //the result of your battle if you lose is just half health, so you don't die
